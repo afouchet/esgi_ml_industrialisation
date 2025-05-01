@@ -165,6 +165,8 @@ Dans ce TD, nous allons supposer qu'un data scientist est arrivé à un bon mod�
 
 Voici [un zip avec des data](https://drive.google.com/file/d/1c6lRYoXXRQW9T4i1nKZC4H2qmd1CiYrE/view?usp=sharing)
 
+Le code à refactorer est dans td4/script.py
+
 ### Contexte
 
 Nous travaillons dans une start-up d'adtech. Lorsqu'un utilisateur arrive sur une page, on nous envoie une requête d'enchère (bid) pour un "user" sur une "page". Nous devons envoyer une "ad" ainsi que le "bid" (combien nous sommes prêts à payer pour diffuser notre pub à cet utilisateur sur cette page).

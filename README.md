@@ -140,7 +140,7 @@ Si on joue le jeu, on essaie de lire, dans les logs (qui peuvent être écrit da
 Dans le dossier TD3, vous trouverez 2 fichiers: app.py et test_app.py.<br/>
 test_app va vraiment appeler l'API. <br/>
 Il faut
-```python run app.py```
+```python app.py```
 Pour rendre l'API disponible.<br/>
 Ensuite on peut lancer les tests.
 

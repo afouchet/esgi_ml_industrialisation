@@ -1,3 +1,4 @@
+from time import sleep
 from unittest.mock import patch
 
 from td5.chatbot import ChatBot
@@ -123,3 +124,31 @@ def test_run_sql_query__autovalid_update():
     bot.run_sql_query(sql_update, user_id=2)
 
     assert bot._queries_to_validate == []
+
+def test_add_lag():
+    """
+    If a user spams our API, we want to add lag, with the following rules:
+    - if >= 5 calls in past second, add lag of 1
+    - if >= 10 calls in past 10 second, add lag of 10
+    """
+
+    bot = ChatBot()
+
+    sql_query = "SELECT * FROM drugs;"
+    user_id = 42
+
+    for i in range(4):
+        bot.run_sql_query(sql_query)
+
+    # 5th query gets you lag
+    bot.run_sql_query(sql_query)
+    assert bot.add_lag(user_id) == 1
+
+    sleep(1)
+
+    assert bot.add_lag(user_id) == 0
+
+    for i in range(10):
+        bot.run_sql_query(sql_query)
+
+    assert bot.add_lag(user_id) == 10

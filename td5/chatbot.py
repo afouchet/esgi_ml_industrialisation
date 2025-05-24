@@ -68,15 +68,21 @@ class ChatBot:
         )
         return res.choices[0].message.content
 
-    def run_sql_query(self, sql_query):
-        """Extract SQL from LLM response and execute it"""
+    def run_sql_query(self, sql_query, user_id, admin=False):
+        """Extract SQL from LLM response and execute it
+
+        For the TD, with admin=True, it runs all queries.
+        with admin=False, student will create code to say which queries
+        can be run without supervision.
+        Others will be appended to self._queries_to_validate
+        """
         try:
             cursor = self.db_connection.cursor()
             cursor.execute(sql_query)
             results = cursor.fetchall()
             logger.info(f" --- Got SQL results: {results}")
             columns = [description[0] for description in cursor.description] 
-            result_csv = pd.DataFrame(columns=columns, data=results).to_csv()
+            result_csv = pd.DataFrame(columns=columns, data=results).to_csv(index=False)
             return result_csv
         except Exception as e:
             return f"Error executing query: {str(e)}"
@@ -107,7 +113,7 @@ Start your reply with ```sql"""
             sql_query = sql_response.strip()
             
         logger.info(f"🔍 Generated SQL: {sql_query}")
-        return self.run_sql_query(sql_query)
+        return self.run_sql_query(sql_query, user_id)
 
     def format_response(self, results, original_prompt, user_id):
         """Format query results into human-readable response"""
@@ -146,7 +152,7 @@ if __name__ == "__main__":
     # Initialize the vulnerable bot
     bot = ChatBot()
     
-    logger.setLevel(logging.ERROR)
+    # logger.setLevel(logging.ERROR)
     # Test case 1: Legitimate info on drug
     print(" ==== ✅ drug info ==== ")
     print(bot.chat(2, "What is the purpose of Ibuprofen?"))

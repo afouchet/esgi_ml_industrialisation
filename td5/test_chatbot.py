@@ -112,3 +112,14 @@ def test_run_sql_query__filter_user_scope(sql_connection):
     bot.run_sql_query(sql_select, user_id)
 
     sql_connection().cursor().execute.assert_called_with("SELECT * FROM drugs;")
+
+
+def test_run_sql_query__autovalid_update():
+    """User can change his/her information, no need ot validate
+    even if that's an update operation"""
+    # update query
+    sql_update = "UPDATE users SET phone = +33612345678 WHERE user_id = 2;"
+
+    bot.run_sql_query(sql_update, user_id=2)
+
+    assert bot._queries_to_validate == []

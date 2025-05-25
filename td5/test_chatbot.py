@@ -114,6 +114,36 @@ def test_run_sql_query__filter_user_scope(sql_connection):
 
     sql_connection().cursor().execute.assert_called_with("SELECT * FROM drugs;")
 
+    # Select with join
+    sql_select = """SELECT 
+    p.purchase_id, 
+    p.purchase_date, 
+    p.total_amount,
+    p.delivery_address,
+    u.credit_card_number
+FROM purchases p
+JOIN users u ON p.user_id = u.user_id;"""
+
+    bot.run_sql_query(sql_select, user_id)
+
+    sql_connection().cursor().execute.assert_called_with(
+        """SELECT 
+    p.purchase_id, 
+    p.purchase_date, 
+    p.total_amount,
+    p.delivery_address,
+    u.credit_card_number
+FROM purchases p
+JOIN users u ON p.user_id = u.user_id WHERE p.user_id = 10;"""
+    )
+
+    # No "user_id = 2" to add, becase it's already there
+    sql_select = "SELECT * FROM purchases WHERE  user_id = 10;"
+
+    bot.run_sql_query(sql_select, user_id)
+
+    sql_connection().cursor().execute.assert_called_with(sql_query)
+
 
 def test_run_sql_query__autovalid_update():
     """User can change his/her information, no need ot validate

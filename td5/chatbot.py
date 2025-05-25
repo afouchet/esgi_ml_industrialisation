@@ -53,6 +53,13 @@ class ChatBot:
                 logger.info(f"Warning: {csv_file} not found, creating empty table")
                 pass  # CSV file not found
 
+    def get_table(self, table_name):
+        cursor = self.db_connection.cursor()
+        cursor.execute("SELECT * FROM {table_name}")
+        results = cursor.fetchall()
+        columns = [description[0] for description in cursor.description] 
+        return pd.DataFrame(columns=columns, data=results)
+
     def call_llm(self, prompt, user_id, role):
         """
         Call OpenAI API to generate SQL query

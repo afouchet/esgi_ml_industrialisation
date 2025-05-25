@@ -19,22 +19,24 @@ u_clusters = 5  # Number of user clusters
 p_clusters = 7  # Number of page clusters
 seed = 42
 
-FOLDER = Path("data") / "raw"/ "td4"
 
 _cache = {}
 
-def get_data():
-    tmp_user_data = pd.read_csv(FOLDER / "user_data.csv")
-    tmp_page_data = pd.read_csv(FOLDER / "page_data.csv")
-    tmp_bid_data = pd.read_csv(FOLDER / "bid_requests_train.csv")
-    tmp_click_data = pd.read_csv(FOLDER / "click_data_train.csv")
-    
-    _cache["user_data"] = tmp_user_data
-    _cache["page_data"] = tmp_page_data
-    _cache["bid_data"] = tmp_bid_data
-    _cache["click_data"] = tmp_click_data
-    
-    return tmp_user_data, tmp_page_data, tmp_bid_data, tmp_click_data
+class DataCatalog:
+    folder = Path("data") / "raw"/ "td4"
+
+    def __init__(self):
+        self.dataset_to_filename = {
+            "user": "user_data.csv",
+            "page": "page_data.csv",
+            "bid": "bid_requests_train.csv",
+            "click": "click_data_train.csv",
+        }
+
+    def load(self, name):
+        filename = self.dataset_to_filename[name]
+        return pd.read_csv(self.folder / filename)
+
 
 def preprocess_text(text_series):
     text_series = text_series.fillna("")
@@ -42,11 +44,11 @@ def preprocess_text(text_series):
     return text_series
 
 @cache
-def clusterize_pages(k=7):
+def clusterize_pages(catalog, k=7):
     if "page_clusters" in _cache:
         return _cache["page_clusters"], _cache["page_cluster_model"], _cache["page_vectorizer"]
     
-    _, page_data, _, _ = get_data()
+    page_data = catalog.load("page")
     
     vect = TfidfVectorizer(max_features=1000, stop_words='english')
     X_pages = vect.fit_transform(preprocess_text(page_data['page_text']))
@@ -63,8 +65,8 @@ def clusterize_pages(k=7):
     return page_data, km, vect
 
 
-def train_page_cluster_predictor():
-    page_data, _, vect = clusterize_pages(p_clusters)
+def train_page_cluster_predictor(catalog):
+    page_data, _, vect = clusterize_pages(catalog, p_clusters)
     
     X_pages = vect.transform(preprocess_text(page_data['page_text']))
     y = page_data['cluster']
@@ -76,10 +78,11 @@ def train_page_cluster_predictor():
     
     return lr
 
-def process_user_data():
+def process_user_data(catalog):
     """Process user data for clustering"""
     # Get data
-    user_data, _, bid_data, _ = get_data()
+    user_data = catalog.load("user")
+    bid_data = catalog.load("bid")
     
     # One-hot encode user features
     user_processed = pd.get_dummies(user_data, columns=['sex', 'city', 'device'])
@@ -99,11 +102,11 @@ def process_user_data():
     
     return user_processed
 
-def clusterize_users(k=5):
+def clusterize_users(catalog, k=5):
     if "user_clusters" in _cache:
         return _cache["user_clusters"], _cache["user_cluster_model"]
     
-    user_processed = process_user_data()
+    user_processed = process_user_data(catalog)
     
     km = KMeans(n_clusters=k, random_state=seed)
     user_clusters = km.fit_predict(user_processed.drop('user_id', axis=1))
@@ -132,9 +135,9 @@ def get_page_cluster_probabilities(page_id):
     
     return probs
 
-def build_click_features():
+def build_click_features(catalog):
     """Build features for click prediction"""
-    user_data, page_data, bid_data, click_data = get_data()
+    click_data = catalog.load("click")
     
     # Number of ad seen this day before this page
     click_data["date"] = click_data["timestamp"].apply(lambda txt: txt[:10])
@@ -172,8 +175,8 @@ def build_click_features():
     
     return click_features
 
-def train_click_predictor():
-    click_features = build_click_features()
+def train_click_predictor(catalog):
+    click_features = build_click_features(catalog)
     
     X = click_features.drop(['user_id', 'page_id', 'ad_id', 'clicked'], axis=1)
     
@@ -187,6 +190,7 @@ def train_click_predictor():
     return lr
 
 def predict_click(user_id, page_id, ad_id):
+    catalog = DataCatalog()
     user_clusters, _ = clusterize_users(u_clusters)
     user_cluster = user_clusters[user_clusters['user_id'] == user_id]['cluster'].values[0]
     
@@ -194,14 +198,14 @@ def predict_click(user_id, page_id, ad_id):
     
     features = np.hstack([np.array([user_cluster]), page_probs, np.array([ad_id])])
     
-    lr = train_click_predictor()
+    lr = train_click_predictor(catalog)
     
     prob = lr.predict_proba(features.reshape(1, -1))[0][1]
     
     return prob
 
-def evaluate_model():
-    click_features = build_click_features()
+def evaluate_model(catalog):
+    click_features = build_click_features(catalog)
     
     msk = np.random.rand(len(click_features)) < 0.8
     train = click_features[msk]
@@ -289,11 +293,11 @@ def main():
     print("\nDone!")
 
 def train_model():
-    get_data()
-    clusterize_pages(p_clusters)
-    train_page_cluster_predictor()
-    clusterize_users(u_clusters)
-    train_click_predictor()
+    catalog = DataCatalog()
+    clusterize_pages(catalog, p_clusters)
+    train_page_cluster_predictor(catalog)
+    clusterize_users(catalog, u_clusters)
+    train_click_predictor(catalog)
 
 
 def predict(df_test):

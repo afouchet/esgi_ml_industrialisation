@@ -38,6 +38,9 @@ class DataCatalog:
         return pd.read_csv(self.folder / filename)
 
 
+def get_model():
+    return LogisticRegression(max_iter=1000, random_state=seed)
+
 def _reload_cache():
     global _cache
     _cache = {}
@@ -139,7 +142,7 @@ def get_page_cluster_probabilities(catalog, page_id):
     
     return probs
 
-def build_click_features(catalog):
+def build_features(catalog):
     """Build features for click prediction"""
     click_data = catalog.load("click")
     
@@ -179,20 +182,6 @@ def build_click_features(catalog):
     
     return click_features
 
-def train_click_predictor(catalog):
-    click_features = build_click_features(catalog)
-    
-    X = click_features.drop(['user_id', 'page_id', 'ad_id', 'clicked'], axis=1)
-    
-    y = click_features['clicked']
-    
-    lr = LogisticRegression(max_iter=1000, random_state=seed)
-    lr.fit(X, y)
-    
-    _cache["click_predictor"] = lr
-    
-    return lr
-
 def predict_click(catalog, user_id, page_id, ad_id):
     user_clusters, _ = clusterize_users(catalog, u_clusters)
     user_cluster = user_clusters[user_clusters['user_id'] == user_id]['cluster'].values[0]
@@ -201,9 +190,9 @@ def predict_click(catalog, user_id, page_id, ad_id):
     
     features = np.hstack([np.array([user_cluster]), page_probs, np.array([ad_id])])
     
-    lr = train_click_predictor(catalog)
+    model = _cache["click_predictor"]
     
-    prob = lr.predict_proba(features.reshape(1, -1))[0][1]
+    prob = model.predict_proba(features.reshape(1, -1))[0][1]
     
     return prob
 
@@ -297,19 +286,37 @@ def main():
 
 def train_model():
     catalog = DataCatalog()
+
     clusterize_pages(catalog, p_clusters)
     train_page_cluster_predictor(catalog)
     clusterize_users(catalog, u_clusters)
-    train_click_predictor(catalog)
+
+    df = build_features(catalog)
+    
+    y = df.pop("clicked")
+    X = df.drop(['user_id', 'page_id', 'ad_id'], axis=1)
+
+    model = get_model()
+    model.fit(X, y)
+
+    _cache["click_predictor"] = model
+
+    save_models()
 
 
 def predict(df_test):
-    catalog = DataCatalog()
     load_models()
-    return [
-        predict_click(catalog, row.user_id, row.page_id, row.ad_id)
-        for _, row in df_test.iterrows()
-    ]
+
+    catalog = DataCatalog()
+    df = build_features(catalog)
+    df.pop("clicked")
+
+    df = df_test.merge(df)
+    X = df.drop(['user_id', 'page_id', 'ad_id'], axis=1)
+
+    model = _cache["click_predictor"]
+
+    return model.predict_proba(X)
 
 
 if __name__ == "__main__":

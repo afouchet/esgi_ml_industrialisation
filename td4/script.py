@@ -38,6 +38,11 @@ class DataCatalog:
         return pd.read_csv(self.folder / filename)
 
 
+def _reload_cache():
+    global _cache
+    _cache = {}
+
+
 def preprocess_text(text_series):
     text_series = text_series.fillna("")
     text_series = text_series.str.lower()
@@ -63,7 +68,6 @@ def clusterize_pages(catalog, k=7):
     _cache["page_vectorizer"] = vect
     
     return page_data, km, vect
-
 
 def train_page_cluster_predictor(catalog):
     page_data, _, vect = clusterize_pages(catalog, p_clusters)
@@ -119,9 +123,9 @@ def clusterize_users(catalog, k=5):
     return user_processed, km
 
 @cache
-def get_page_cluster_probabilities(page_id):
+def get_page_cluster_probabilities(catalog, page_id):
     """Get probabilities of a page belonging to each cluster"""
-    page_data, _, vect = clusterize_pages(p_clusters)
+    page_data, _, vect = clusterize_pages(catalog, p_clusters)
 
     lr = _cache.get("page_cluster_predictor")
     if not lr:
@@ -150,14 +154,14 @@ def build_click_features(catalog):
 
     click_data = click_data[["user_id", "page_id", "ad_id", "user_ads_seen", "clicked"]]
 
-    user_clusters, _ = clusterize_users(u_clusters)
-    page_clusters, _, _ = clusterize_pages(p_clusters)
+    user_clusters, _ = clusterize_users(catalog, u_clusters)
+    page_clusters, _, _ = clusterize_pages(catalog, p_clusters)
     
     click_features = click_data.merge(user_clusters[['user_id', 'cluster']], on='user_id', how='left')
     click_features = click_features.rename(columns={'cluster': 'user_cluster'})
     
     cluster_probs = []
-    page_to_cluster_prob = {page_id: get_page_cluster_probabilities(page_id) for page_id in click_features["page_id"].unique()}
+    page_to_cluster_prob = {page_id: get_page_cluster_probabilities(catalog, page_id) for page_id in click_features["page_id"].unique()}
 
     cluster_probs = [page_to_cluster_prob[page_id] for page_id in click_features["page_id"]]
     
@@ -191,10 +195,10 @@ def train_click_predictor(catalog):
 
 def predict_click(user_id, page_id, ad_id):
     catalog = DataCatalog()
-    user_clusters, _ = clusterize_users(u_clusters)
+    user_clusters, _ = clusterize_users(catalog, u_clusters)
     user_cluster = user_clusters[user_clusters['user_id'] == user_id]['cluster'].values[0]
     
-    page_probs = get_page_cluster_probabilities(page_id)
+    page_probs = get_page_cluster_probabilities(catalog, page_id)
     
     features = np.hstack([np.array([user_cluster]), page_probs, np.array([ad_id])])
     
@@ -294,6 +298,7 @@ def main():
 
 def train_model():
     catalog = DataCatalog()
+    load_models()
     clusterize_pages(catalog, p_clusters)
     train_page_cluster_predictor(catalog)
     clusterize_users(catalog, u_clusters)

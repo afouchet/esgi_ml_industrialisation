@@ -76,6 +76,7 @@ def train_page_cluster_predictor(catalog):
     y = page_data['cluster']
     
     lr = LogisticRegression(max_iter=1000, random_state=seed)
+    print(" --- Trained page cluster predictor --- ")
     lr.fit(X_pages, y)
     
     _cache["page_cluster_predictor"] = lr
@@ -298,7 +299,6 @@ def main():
 
 def train_model():
     catalog = DataCatalog()
-    load_models()
     clusterize_pages(catalog, p_clusters)
     train_page_cluster_predictor(catalog)
     clusterize_users(catalog, u_clusters)

@@ -7,7 +7,7 @@ import warnings
 import yaml
 
 from td4.data import get_data_catalog
-from td4.features import build_features, _reload_features_cache, gen_X_y
+from td4.features import build_features, _reload_features_cache, gen_X_y, train_feature_store
 from td4.models import get_model, save_prediction_model, load_prediction_model
 
 warnings.filterwarnings('ignore')
@@ -26,7 +26,8 @@ def main():
 def train_model(config):
     catalog = get_data_catalog(config)
 
-    df = build_features(catalog, config, does_retrain=True)
+    train_feature_store(catalog, config)
+    df = build_features(catalog, config)
     
     X, y = gen_X_y(df)
 
@@ -38,7 +39,7 @@ def train_model(config):
 
 def predict(df_test, config):
     catalog = get_data_catalog(config)
-    df = build_features(catalog, config, does_retrain=False)
+    df = build_features(catalog, config)
     df = df_test.merge(df)
 
     X, y = gen_X_y(df)

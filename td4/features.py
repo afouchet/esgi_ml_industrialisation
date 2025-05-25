@@ -16,14 +16,9 @@ def _reload_features_cache():
     global _cache
     _cache = {}
 
-def build_features(catalog, config, does_retrain=False):
+def build_features(catalog, config):
     """Build features for click prediction"""
-    if does_retrain:
-        train_page_cluster_predictor(catalog, config)
-        clusterize_users(catalog, config)
-        save_feature_models(config)
-    else:
-        load_feature_models(config)
+    load_feature_models(config)
 
     df = get_click_features(catalog)
 
@@ -34,6 +29,12 @@ def build_features(catalog, config, does_retrain=False):
     _cache["click_features"] = df
     
     return df
+
+
+def train_feature_store(catalog, config):
+    train_page_cluster_predictor(catalog, config)
+    clusterize_users(catalog, config)
+    save_feature_models(config)
 
 
 def gen_X_y(df):

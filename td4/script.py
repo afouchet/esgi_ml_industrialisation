@@ -1,6 +1,5 @@
 from functools import cache
 import pandas as pd
-from pathlib import Path
 import numpy as np
 from sklearn.cluster import KMeans
 from sklearn.linear_model import LogisticRegression
@@ -12,6 +11,9 @@ import random
 import os
 import time
 import warnings
+
+from td4.data import get_data_catalog
+
 warnings.filterwarnings('ignore')
 
 # Global vars
@@ -21,22 +23,6 @@ seed = 42
 
 
 _cache = {}
-
-class DataCatalog:
-    folder = Path("data") / "raw"/ "td4"
-
-    def __init__(self):
-        self.dataset_to_filename = {
-            "user": "user_data.csv",
-            "page": "page_data.csv",
-            "bid": "bid_requests_train.csv",
-            "click": "click_data_train.csv",
-        }
-
-    def load(self, name):
-        filename = self.dataset_to_filename[name]
-        return pd.read_csv(self.folder / filename)
-
 
 def get_model():
     return LogisticRegression(max_iter=1000, random_state=seed)
@@ -285,7 +271,7 @@ def main():
     print("\nDone!")
 
 def train_model():
-    catalog = DataCatalog()
+    catalog = get_data_catalog()
 
     clusterize_pages(catalog, p_clusters)
     train_page_cluster_predictor(catalog)
@@ -307,7 +293,7 @@ def train_model():
 def predict(df_test):
     load_models()
 
-    catalog = DataCatalog()
+    catalog = get_data_catalog()
     df = build_features(catalog)
     df.pop("clicked")
 

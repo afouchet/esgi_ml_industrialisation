@@ -301,5 +301,17 @@ def main():
     
     print("\nDone!")
 
+def train_model():
+    main()
+
+
+def predict(df_test):
+    load_models()
+    return [
+        predict_click(row.user_id, row.page_id, row.ad_id)
+        for _, row in df_test.iterrows()
+    ]
+
+
 if __name__ == "__main__":
     main()

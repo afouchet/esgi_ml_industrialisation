@@ -278,20 +278,7 @@ def load_models():
 
 def main():
     """Main function"""
-    print("Starting ad prediction system...")
-    get_data()
-    
-    print("\n== Building page clusters ==")
-    clusterize_pages(p_clusters)
-    
-    print("\n== Training page cluster predictor ==")
-    train_page_cluster_predictor()
-    
-    print("\n== Building user clusters ==")
-    clusterize_users(u_clusters)
-    
-    print("\n== Training click predictor ==")
-    train_click_predictor()
+    train_model()
     
     print("\n== Evaluating model ==")
     evaluate_model()
@@ -302,7 +289,11 @@ def main():
     print("\nDone!")
 
 def train_model():
-    main()
+    get_data()
+    clusterize_pages(p_clusters)
+    train_page_cluster_predictor()
+    clusterize_users(u_clusters)
+    train_click_predictor()
 
 
 def predict(df_test):

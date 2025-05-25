@@ -7,7 +7,7 @@ import warnings
 import yaml
 
 from td4.data import get_data_catalog
-from td4.features import build_features, _reload_features_cache, gen_X_y, train_feature_store
+from td4.features import build_features, gen_X_y, train_feature_store
 from td4.models import get_model, save_prediction_model, load_prediction_model
 
 warnings.filterwarnings('ignore')
@@ -47,10 +47,6 @@ def predict(df_test, config):
     model = load_prediction_model(config)
 
     return model.predict_proba(X)
-
-
-def _reload_cache():
-    _reload_features_cache()
 
 
 def evaluate_model(catalog, config):

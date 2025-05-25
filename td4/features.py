@@ -1,32 +1,20 @@
 from functools import cache
 import numpy as np
-import os
 import pandas as pd
-import pickle
 import random
 
 from sklearn.cluster import KMeans
 from sklearn.linear_model import LogisticRegression
 from sklearn.feature_extraction.text import TfidfVectorizer
-# Global vars
 
-_cache = {}
-
-def _reload_features_cache():
-    global _cache
-    _cache = {}
 
 def build_features(catalog, config):
     """Build features for click prediction"""
-    load_feature_models(config)
-
     df = get_click_features(catalog)
 
     df = add_user_features(df, catalog, config)
 
     df = add_cluster_features(df, catalog, config)
-    
-    _cache["click_features"] = df
     
     return df
 
@@ -34,7 +22,6 @@ def build_features(catalog, config):
 def train_feature_store(catalog, config):
     train_page_cluster_predictor(catalog, config)
     clusterize_users(catalog, config)
-    save_feature_models(config)
 
 
 def gen_X_y(df):
@@ -70,11 +57,12 @@ def add_user_features(df, catalog, config):
 def add_cluster_features(df, catalog, config):
     p_clusters = config["features"]["pages"]["nb_clusters"]
 
-    page_clusters, _, _ = clusterize_pages(catalog, config)
-    
+    page_data = catalog.load("pages")
+    page_id_to_text = {row.page_id: row.page_text for _, row in page_data.iterrows()}
+
     cluster_probs = []
     page_to_cluster_prob = {
-        page_id: get_page_cluster_probabilities(catalog, page_id, p_clusters)
+        page_id: get_page_cluster_probabilities(catalog, page_id_to_text[page_id])
         for page_id in df["page_id"].unique()
     }
 
@@ -97,13 +85,10 @@ def preprocess_text(text_series):
     return text_series
 
 def clusterize_pages(catalog, config):
-    if "page_clusters" in _cache:
-        return _cache["page_clusters"], _cache["page_cluster_model"], _cache["page_vectorizer"]
-    
     k = config["features"]["pages"]["nb_clusters"]
     seed = config["seed"]
 
-    page_data = catalog.load("page")
+    page_data = catalog.load("pages")
     
     vect = TfidfVectorizer(max_features=1000, stop_words='english')
     X_pages = vect.fit_transform(preprocess_text(page_data['page_text']))
@@ -112,12 +97,11 @@ def clusterize_pages(catalog, config):
     page_clusters = km.fit_predict(X_pages)
     
     page_data['cluster'] = page_clusters
-    
-    _cache["page_clusters"] = page_data
-    _cache["page_cluster_model"] = km
-    _cache["page_vectorizer"] = vect
+
+    catalog.save_vectorizer("pages", vect)
     
     return page_data, km, vect
+
 
 def train_page_cluster_predictor(catalog, config):
     page_data, _, vect = clusterize_pages(catalog, config)
@@ -128,7 +112,7 @@ def train_page_cluster_predictor(catalog, config):
     lr = LogisticRegression(max_iter=1000, random_state=config["seed"])
     lr.fit(X_pages, y)
     
-    _cache["page_cluster_predictor"] = lr
+    catalog.save_model("pages", lr)
     
     return lr
 
@@ -151,15 +135,10 @@ def process_user_data(catalog):
     user_visits.columns = [str(c) for c in user_visits.columns]
     user_processed = user_processed.merge(user_visits, on='user_id', how='left')
     
-    # Cache processed data
-    _cache["processed_user_data"] = user_processed
     
     return user_processed
 
 def clusterize_users(catalog, config):
-    if "user_clusters" in _cache:
-        return _cache["user_clusters"], _cache["user_cluster_model"]
-    
     k = config["features"]["user"]["nb_clusters"]
     seed = config["seed"]
 
@@ -170,56 +149,18 @@ def clusterize_users(catalog, config):
     
     user_processed['cluster'] = user_clusters
     
-    _cache["user_clusters"] = user_processed
-    _cache["user_cluster_model"] = km
+    catalog.save_model("user", km)
     
     return user_processed, km
 
 @cache
-def get_page_cluster_probabilities(catalog, page_id, p_clusters):
+def get_page_cluster_probabilities(catalog, page_text):
     """Get probabilities of a page belonging to each cluster"""
-    page_data, _, vect = clusterize_pages(catalog, p_clusters)
-
-    lr = _cache.get("page_cluster_predictor")
-    if not lr:
-        lr = train_page_cluster_predictor()
-    
-    page_text = page_data[page_data['page_id'] == page_id]['page_text'].values[0]
+    vect = catalog.load_vectorizer("pages")
+    lr = catalog.load_model("pages")
     
     X = vect.transform([preprocess_text(pd.Series([page_text]))[0]])
     
     probs = lr.predict_proba(X)[0]
     
     return probs
-
-
-def save_feature_models(config):
-    if not os.path.exists("models"):
-        os.makedirs("models")
-    
-    # Save page vectorizer
-    with open(config["features"]["pages"]["vectorizer_path"], "wb") as f:
-        pickle.dump(_cache["page_vectorizer"], f)
-    
-    # Save page cluster predictor
-    with open(config["features"]["pages"]["model_path"], "wb") as f:
-        pickle.dump(_cache["page_cluster_predictor"], f)
-    
-    # Save user cluster model
-    with open(config["features"]["user"]["model_path"], "wb") as f:
-        pickle.dump(_cache["user_cluster_model"], f)
-    
-
-def load_feature_models(config):
-    # Load page vectorizer
-    with open(config["features"]["pages"]["vectorizer_path"], "rb") as f:
-        _cache["page_vectorizer"] = pickle.load(f)
-    
-    # Load page cluster predictor
-    with open(config["features"]["pages"]["model_path"], "rb") as f:
-        _cache["page_cluster_predictor"] = pickle.load(f)
-    
-    # Load user cluster model
-    with open(config["features"]["user"]["model_path"], "rb") as f:
-        _cache["user_cluster_model"] = pickle.load(f)
-    

@@ -5,7 +5,7 @@ model:
 
 data: 
   user: user_data.csv
-  page: page_data.csv
+  pages: page_data.csv
   bid: bid_requests_train.csv
   click: click_data_train.csv
 

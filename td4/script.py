@@ -61,12 +61,12 @@ def evaluate_model(catalog, config):
     
     X_train, y_train = gen_X_y(df_train)
     
-    lr = get_model()
-    lr.fit(X_train, y_train)
+    model = get_model(config)
+    model.fit(X_train, y_train)
     
     X_test, y_test= gen_X_y(df_test)
     
-    y_pred = lr.predict(X_test)
+    y_pred = model.predict(X_test)
     accuracy = accuracy_score(y_test, y_pred)
     
     print(f"Model accuracy: {accuracy:.4f}")

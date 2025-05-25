@@ -1,0 +1,20 @@
+seed: 42
+
+model:
+  path: models/click_predictor.pkl
+
+data: 
+  user: user_data.csv
+  page: page_data.csv
+  bid: bid_requests_train.csv
+  click: click_data_train.csv
+
+features:
+  user:
+    nb_clusters: 5
+    model_path: models/user_cluster_model.pkl
+
+  pages:
+    nb_clusters: 7
+    model_path: models/page_cluster_predictor.pkl
+    vectorizer_path: models/page_vectorizer.pkl

@@ -2,20 +2,15 @@ from pathlib import Path
 import pandas as pd
 
 
-def get_data_catalog():
-    return DataCatalog()
+def get_data_catalog(config):
+    return DataCatalog(config)
 
 
 class DataCatalog:
     folder = Path("data") / "raw"/ "td4"
 
-    def __init__(self):
-        self.dataset_to_filename = {
-            "user": "user_data.csv",
-            "page": "page_data.csv",
-            "bid": "bid_requests_train.csv",
-            "click": "click_data_train.csv",
-        }
+    def __init__(self, config):
+        self.dataset_to_filename = config["data"]
 
     def load(self, name):
         filename = self.dataset_to_filename[name]

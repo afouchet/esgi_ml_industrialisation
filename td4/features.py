@@ -47,7 +47,7 @@ def get_click_features(catalog):
 
 
 def add_user_features(df, catalog, config):
-    user_clusters, _ = clusterize_users(catalog, config)
+    user_clusters = get_user_cluster(catalog)
     df = df.merge(
         user_clusters[['user_id', 'cluster']], on='user_id', how='left',
     )
@@ -152,6 +152,16 @@ def clusterize_users(catalog, config):
     catalog.save_model("user", km)
     
     return user_processed, km
+
+def get_user_cluster(catalog):
+    kmeans = catalog.load_model("user")
+    user_processed = process_user_data(catalog)
+
+    user_clusters = kmeans.predict(user_processed.drop('user_id', axis=1))
+
+    user_processed['cluster'] = user_clusters
+
+    return user_processed
 
 @cache
 def get_page_cluster_probabilities(catalog, page_text):

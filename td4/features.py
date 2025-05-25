@@ -25,7 +25,25 @@ def build_features(catalog, config, does_retrain=False):
     else:
         load_feature_models(config)
 
-    p_clusters = config["features"]["pages"]["nb_clusters"]
+    df = get_click_features(catalog)
+
+    df = add_user_features(df, catalog, config)
+
+    df = add_cluster_features(df, catalog, config)
+    
+    _cache["click_features"] = df
+    
+    return df
+
+
+def gen_X_y(df):
+    y = df.pop("clicked")
+    X = df.drop(['user_id', 'page_id', 'ad_id'], axis=1)
+
+    return X, y
+
+
+def get_click_features(catalog):
     click_data = catalog.load("click")
     
     # Number of ad seen this day before this page
@@ -37,42 +55,39 @@ def build_features(catalog, config, does_retrain=False):
     )
 
 
-    click_data = click_data[["user_id", "page_id", "ad_id", "user_ads_seen", "clicked"]]
+    return click_data[["user_id", "page_id", "ad_id", "user_ads_seen", "clicked"]]
 
+
+def add_user_features(df, catalog, config):
     user_clusters, _ = clusterize_users(catalog, config)
-    page_clusters, _, _ = clusterize_pages(catalog, config)
+    df = df.merge(
+        user_clusters[['user_id', 'cluster']], on='user_id', how='left',
+    )
+    return df.rename(columns={'cluster': 'user_cluster'})
     
-    click_features = click_data.merge(user_clusters[['user_id', 'cluster']], on='user_id', how='left')
-    click_features = click_features.rename(columns={'cluster': 'user_cluster'})
+
+def add_cluster_features(df, catalog, config):
+    p_clusters = config["features"]["pages"]["nb_clusters"]
+
+    page_clusters, _, _ = clusterize_pages(catalog, config)
     
     cluster_probs = []
     page_to_cluster_prob = {
         page_id: get_page_cluster_probabilities(catalog, page_id, p_clusters)
-        for page_id in click_features["page_id"].unique()
+        for page_id in df["page_id"].unique()
     }
 
-    cluster_probs = [page_to_cluster_prob[page_id] for page_id in click_features["page_id"]]
+    cluster_probs = [page_to_cluster_prob[page_id] for page_id in df["page_id"]]
     
     cluster_prob_df = pd.DataFrame(
         cluster_probs, 
         columns=[f'page_cluster_prob_{i}' for i in range(p_clusters)]
     )
     
-    click_features = pd.concat(
-        [click_features.reset_index(drop=True),  cluster_prob_df.reset_index(drop=True)],
+    return pd.concat(
+        [df.reset_index(drop=True),  cluster_prob_df.reset_index(drop=True)],
         axis=1,
     )
-    
-    _cache["click_features"] = click_features
-    
-    return click_features
-
-
-def gen_X_y(df):
-    y = df.pop("clicked")
-    X = df.drop(['user_id', 'page_id', 'ad_id'], axis=1)
-
-    return X, y
 
 
 def preprocess_text(text_series):

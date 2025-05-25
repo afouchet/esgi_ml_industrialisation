@@ -1,5 +1,4 @@
 import numpy as np
-from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score
 import pickle
 import random
@@ -8,6 +7,7 @@ import warnings
 
 from td4.data import get_data_catalog
 from td4.features import build_features, _reload_features_cache
+from td4.models import get_model, save_prediction_model, load_prediction_model
 
 warnings.filterwarnings('ignore')
 
@@ -32,14 +32,10 @@ def train_model():
     model = get_model()
     model.fit(X, y)
 
-    _cache["click_predictor"] = model
-
-    save_models()
+    save_prediction_model(model)
 
 
 def predict(df_test):
-    load_models()
-
     catalog = get_data_catalog()
     df = build_features(catalog, does_retrain=False)
     df.pop("clicked")
@@ -47,20 +43,12 @@ def predict(df_test):
     df = df_test.merge(df)
     X = df.drop(['user_id', 'page_id', 'ad_id'], axis=1)
 
-    model = _cache["click_predictor"]
+    model = load_prediction_model()
 
     return model.predict_proba(X)
 
 
-_cache = {}
-
-def get_model():
-    return LogisticRegression(max_iter=1000, random_state=seed)
-
-
 def _reload_cache():
-    global _cache
-    _cache = {}
     _reload_features_cache()
 
 
@@ -74,7 +62,7 @@ def evaluate_model(catalog):
     X_train = train.drop(['user_id', 'page_id', 'ad_id', 'clicked'], axis=1)
     y_train = train['clicked']
     
-    lr = LogisticRegression(max_iter=1000, random_state=seed)
+    lr = get_model()
     lr.fit(X_train, y_train)
     
     X_test = test.drop(['user_id', 'page_id', 'ad_id', 'clicked'], axis=1)
@@ -85,26 +73,6 @@ def evaluate_model(catalog):
     
     print(f"Model accuracy: {accuracy:.4f}")
 
-def get_recommendations(user_id, page_id, ad_ids):
-    load_models()
-    predictions = []
-    for ad_id in ad_ids:
-        prob = predict_click(user_id, page_id, ad_id)
-        predictions.append((ad_id, prob))
-    
-    predictions.sort(key=lambda x: x[1], reverse=True)
-    
-    return predictions
-
-def save_models():
-    # Save click predictor
-    with open("models/click_predictor.pkl", "wb") as f:
-        pickle.dump(_cache["click_predictor"], f)
-
-def load_models():
-    # Load click predictor
-    with open("models/click_predictor.pkl", "rb") as f:
-        _cache["click_predictor"] = pickle.load(f)
 
 if __name__ == "__main__":
     main()

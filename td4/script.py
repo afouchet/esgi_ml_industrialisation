@@ -193,8 +193,7 @@ def train_click_predictor(catalog):
     
     return lr
 
-def predict_click(user_id, page_id, ad_id):
-    catalog = DataCatalog()
+def predict_click(catalog, user_id, page_id, ad_id):
     user_clusters, _ = clusterize_users(catalog, u_clusters)
     user_cluster = user_clusters[user_clusters['user_id'] == user_id]['cluster'].values[0]
     
@@ -305,9 +304,10 @@ def train_model():
 
 
 def predict(df_test):
+    catalog = DataCatalog()
     load_models()
     return [
-        predict_click(row.user_id, row.page_id, row.ad_id)
+        predict_click(catalog, row.user_id, row.page_id, row.ad_id)
         for _, row in df_test.iterrows()
     ]
 

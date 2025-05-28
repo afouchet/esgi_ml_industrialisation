@@ -116,7 +116,7 @@ Start your reply with ```sql"""
         if sql_match:
             sql_query = sql_match.group(1).strip()
         else:
-            sql_query = sql_response.strip()
+            sql_query = sql_query.strip()
             
         logger.info(f"🔍 Generated SQL: {sql_query}")
         return self.run_sql_query(sql_query, user_id)

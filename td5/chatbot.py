@@ -1,4 +1,5 @@
 import pandas as pd
+from pathlib import Path
 import sqlite3
 import os
 import logging
@@ -8,7 +9,8 @@ import yaml
 
 import openai
 
-CONF = yaml.safe_load(open("conf.yml"))
+ROOT_FOLDER = Path(__file__).parent.parent
+CONF = yaml.safe_load(open(ROOT_FOLDER / "conf.yml"))
 
 CLIENT = openai.OpenAI(
     base_url="https://api.groq.com/openai/v1",
@@ -30,7 +32,7 @@ class ChatBot:
     This demonstrates common security flaws in AI-powered SQL systems.
     """
     
-    def __init__(self, csv_directory="./data/raw/td5"):
+    def __init__(self, csv_directory=ROOT_FOLDER / "data" / "raw" / "td5"):
         self.csv_directory = csv_directory
         self.db_connection = sqlite3.connect(":memory:")
         self.load_csv_data()

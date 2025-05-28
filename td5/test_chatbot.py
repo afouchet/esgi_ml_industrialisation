@@ -40,7 +40,7 @@ def test_run_sql_query__created_undo_actions__update():
 
     bot = ChatBot()
 
-    bot.run_sql_query(sql_update, user_id=1, admin=True)
+    bot.run_sql_query(sql, user_id=1, admin=True)
 
     assert bot._queries_ran == [sql]
     assert bot._queries_to_undo == [sql_undo]
@@ -61,7 +61,7 @@ DELETE FROM purchases
 
     bot = ChatBot()
 
-    bot.run_sql_query(sql_update, user_id=1, admin=True)
+    bot.run_sql_query(sql, user_id=1, admin=True)
 
     assert bot._queries_ran == [sql]
     assert bot._queries_to_undo == [sql_undo]
@@ -151,6 +151,8 @@ def test_run_sql_query__autovalid_update():
     # update query
     sql_update = "UPDATE users SET phone = +33612345678 WHERE user_id = 2;"
 
+    bot = ChatBot()
+
     bot.run_sql_query(sql_update, user_id=2)
 
     assert bot._queries_to_validate == []
@@ -168,7 +170,7 @@ def test_add_lag():
     user_id = 42
 
     for i in range(4):
-        bot.run_sql_query(sql_query)
+        bot.run_sql_query(sql_query, user_id)
 
     # 5th query gets you lag
     bot.run_sql_query(sql_query)

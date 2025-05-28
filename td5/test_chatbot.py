@@ -173,7 +173,7 @@ def test_add_lag():
         bot.run_sql_query(sql_query, user_id)
 
     # 5th query gets you lag
-    bot.run_sql_query(sql_query)
+    bot.run_sql_query(sql_query, user_id)
     assert bot.add_lag(user_id) == 1
 
     sleep(1)
@@ -181,6 +181,6 @@ def test_add_lag():
     assert bot.add_lag(user_id) == 0
 
     for i in range(10):
-        bot.run_sql_query(sql_query)
+        bot.run_sql_query(sql_query, user_id)
 
     assert bot.add_lag(user_id) == 10

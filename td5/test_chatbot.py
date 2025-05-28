@@ -142,7 +142,7 @@ JOIN users u ON p.user_id = u.user_id WHERE p.user_id = 10;"""
 
     bot.run_sql_query(sql_select, user_id)
 
-    sql_connection().cursor().execute.assert_called_with(sql_query)
+    sql_connection().cursor().execute.assert_called_with(sql_select)
 
 
 def test_run_sql_query__autovalid_update():

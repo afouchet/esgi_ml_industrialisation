@@ -22,7 +22,7 @@ WHERE d.requires_prescription = 0;"""
 
     reply = bot.run_sql_query(sql_select, user_id=1)
 
-    assert reply == "drug_name\nAcetaminophen\nIbuprofen\nOmeprazole\n"
+    assert reply == "drug_name\rAcetaminophen\rIbuprofen\rOmeprazole\n"
     assert bot._queries_to_validate == [sql_insert]
 
     # update query
@@ -30,7 +30,7 @@ WHERE d.requires_prescription = 0;"""
 
     reply = bot.run_sql_query(sql_update, user_id=1)
 
-    assert reply == "drug_name\nAcetaminophen\nIbuprofen\nOmeprazole\n"
+    assert reply == f"Waiting human validation to execute: {sql_update}"
     assert bot._queries_to_validate == [sql_insert, sql_update]
 
 

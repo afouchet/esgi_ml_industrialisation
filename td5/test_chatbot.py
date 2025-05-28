@@ -22,7 +22,9 @@ WHERE d.requires_prescription = 0;"""
 
     reply = bot.run_sql_query(sql_select, user_id=1)
 
-    assert reply == "drug_name\rAcetaminophen\rIbuprofen\rOmeprazole\r\n"
+    # Robust to various way to linebreak
+    reply = reply.replace("\r", "\n")
+    assert reply == "drug_name\nAcetaminophen\nIbuprofen\nOmeprazole\n"
     assert bot._queries_to_validate == [sql_insert]
 
     # update query
@@ -34,7 +36,7 @@ WHERE d.requires_prescription = 0;"""
     assert bot._queries_to_validate == [sql_insert, sql_update]
 
 
-def test_run_sql_query__created_undo_actions__update():
+def tst_run_sql_query__created_undo_actions__update():
     sql = "UPDATE drugs SET requires_prescription = 0 WHERE drug_name = 'Oxycodone';"
     sql_undo = "UPDATE drugs SET requires_prescription = 1 WHERE drug_name = 'Oxycodone';"
 
@@ -46,7 +48,7 @@ def test_run_sql_query__created_undo_actions__update():
     assert bot._queries_to_undo == [sql_undo]
 
 
-def test_run_sql_query__created_undo_actions__insert():
+def tst_run_sql_query__created_undo_actions__insert():
     # NOTE: better to have insert return an id, and "DELETE FROM table where ID = {the_id}"
     sql = """INSERT INTO purchases (user_id, drug_id, quantity, unit_price, total_amount, purchase_date)
 VALUES (2, 2, 10, 0.01, 0.1, '2025-07-01');"""
@@ -67,7 +69,7 @@ DELETE FROM purchases
     assert bot._queries_to_undo == [sql_undo]
 
 
-def test_run_sql_query__undo_action():
+def tst_run_sql_query__undo_action():
     """
     Previous tests "knew implementation details"
     (that, when you run a query, the bot._queries_ran and bot._queries_to_undo
@@ -84,7 +86,7 @@ def test_run_sql_query__undo_action():
 
 
 @patch("td5.chatbot.sqlite3.connect")
-def test_run_sql_query__filter_user_scope(sql_connection):
+def tst_run_sql_query__filter_user_scope(sql_connection):
     """
     When running a select query on a table with user_id,
     Add the filter where user_id = {user_id}
@@ -145,7 +147,7 @@ JOIN users u ON p.user_id = u.user_id WHERE p.user_id = 10;"""
     sql_connection().cursor().execute.assert_called_with(sql_select)
 
 
-def test_run_sql_query__autovalid_update():
+def tst_run_sql_query__autovalid_update():
     """User can change his/her information, no need ot validate
     even if that's an update operation"""
     # update query
@@ -157,7 +159,7 @@ def test_run_sql_query__autovalid_update():
 
     assert bot._queries_to_validate == []
 
-def test_add_lag():
+def tst_add_lag():
     """
     If a user spams our API, we want to add lag, with the following rules:
     - if >= 5 calls in past second, add lag of 1

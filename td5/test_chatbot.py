@@ -22,7 +22,7 @@ WHERE d.requires_prescription = 0;"""
 
     reply = bot.run_sql_query(sql_select, user_id=1)
 
-    assert reply == "drug_name\rAcetaminophen\rIbuprofen\rOmeprazole\n"
+    assert reply == "drug_name\rAcetaminophen\rIbuprofen\rOmeprazole\r\n"
     assert bot._queries_to_validate == [sql_insert]
 
     # update query

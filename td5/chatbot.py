@@ -22,7 +22,6 @@ console_handler = logging.StreamHandler()
 formatter = logging.Formatter('%(asctime)s:%(name)s:%(levelname)s:%(message)s')
 console_handler.setFormatter(formatter)
 
-# Add the console handler to the logger
 logger.addHandler(console_handler)
 
 class ChatBot:
@@ -154,12 +153,11 @@ You translate in natural language the sql-context information
         return response
 
 
-# Demo usage
 if __name__ == "__main__":
-    # Initialize the vulnerable bot
     bot = ChatBot()
     
-    # logger.setLevel(logging.ERROR)
+    logger.setLevel(logging.ERROR)
+
     # Test case 1: Legitimate info on drug
     print(" ==== ✅ drug info ==== ")
     print(bot.chat(2, "What is the purpose of Ibuprofen?"))

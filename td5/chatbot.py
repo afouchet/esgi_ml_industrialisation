@@ -54,7 +54,7 @@ class ChatBot:
 
     def get_table(self, table_name):
         cursor = self.db_connection.cursor()
-        cursor.execute("SELECT * FROM {table_name}")
+        cursor.execute(f"SELECT * FROM {table_name}")
         results = cursor.fetchall()
         columns = [description[0] for description in cursor.description] 
         return pd.DataFrame(columns=columns, data=results)

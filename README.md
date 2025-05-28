@@ -275,7 +275,10 @@ Vous trouverez sur [ce lien](https://drive.google.com/file/d/1sPh1r6Tnoqg4K5hrMs
 Allez sur [Groq](https://groq.com/) pour obtenir une clé API permettant de faire tourner le LLM "gemma2-9b-it" "gratuitement" (dans la limite du nombre de requête)
 Créer un fichier "conf.yml" avec "groq_key: YOUR_API_KEY"<br/>
 
-Normalement, si vous lancez "python td5/chatbot.py", vous pouvez voir le résultat des différentes requêtes, dont les interdites.
+Normalement, si vous lancez
+```bash
+python td5/chatbot.py
+```, vous pouvez voir le résultat des différentes requêtes, dont les interdites.
 
 ### A faire
 

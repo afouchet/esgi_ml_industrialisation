@@ -278,7 +278,8 @@ Créer un fichier "conf.yml" avec "groq_key: YOUR_API_KEY"<br/>
 Normalement, si vous lancez
 ```bash
 python td5/chatbot.py
-```, vous pouvez voir le résultat des différentes requêtes, dont les interdites.
+```
+, vous pouvez voir le résultat des différentes requêtes, dont les interdites.
 
 ### A faire
 

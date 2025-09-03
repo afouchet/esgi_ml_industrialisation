@@ -124,7 +124,7 @@ L'entry point "get_weekly_sales" lit vraiment les données.<br/>
 ### Après 1 heure
 
 Vous avez fait "get_monthly_sales", et vous avez réfléchi à comment refactorer votre code. <br/>
-**-1 point si non fait après 30 minutes**
+**-1 point si non fait après 1 heure**
 
 ## A rendre
 

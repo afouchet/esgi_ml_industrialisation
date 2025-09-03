@@ -84,8 +84,8 @@ Vous pouvez déclarer un service "data" (services/data.py), qui enregistre la do
 **Attention:** Ne perdez pas 30 minutes à refactorer. "Premature optimisation is the root of all evil".<br/>
 Regardez votre code, et faites le refactoring qui vous semble adapter maintenant, sans faire de plan sur la comète.
 6. Vous allez créer le code "tag_outlier" qui ajoute is_outlier=True si la vente est supérieure à la moyenne plus 5 fois l'écart-type. <br/>
-Commencer par créer le test.
-Faites le code.
+Commencer par créer le test.<br/>
+Faites le code.<br/>
 Faut-il prendre moyenne globale ou légume par légume ? Pourquoi ?
 7. Changer le modèle pour ne plus écrire dans un CSV, mais dans une table SQL Lite.<br/>
 Si vous avez bien travaillé, le changement isolé et n'impacte pas les entry points ni la pipeline.<br/>

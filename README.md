@@ -92,9 +92,9 @@ Si vous avez bien travaillé, le changement isolé et n'impacte pas les entry po
 Si le changement semble compliqué:
 - Réfléchissez à ce que vous pouvez refactorer
 - Pensez au modèle MVC (Model, View, Controller).
--- View est app.py, les entry points de l'utilisateur
--- Model est là où sont stockées les données. Idéalement, c'est seulement ce bout qui change, pour passer de "stocker dans CSV" à "stocker dans SQL"
--- Controller est les services, ceux qui vont prendre "arguments de l'utilisateur" -> "exercer l'action" (que ce soit écrire des données ou retourner des données)
+  - View est app.py, les entry points de l'utilisateur
+  - Model est là où sont stockées les données. Idéalement, c'est seulement ce bout qui change, pour passer de "stocker dans CSV" à "stocker dans SQL"
+  - Controller est les services, ceux qui vont prendre "arguments de l'utilisateur" -> "exercer l'action" (que ce soit écrire des données ou retourner des données)
 
 8. Ajouter un entry point "/init_database" pour créer la database ou la vider. <br/>
 

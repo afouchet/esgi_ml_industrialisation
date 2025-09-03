@@ -75,13 +75,13 @@ Dans les tests unitaires, on s'assure du bon fonctionnement d'une brique. C'est 
 5. Il est temps de réfléchir à la maintenabilité du code<br/>
 app.py doit juste déclarer les entry points, et appeler les bons "services" (où on mettra la logique). <br/>
 Vous pouvez déclarer un service "data" (services/data.py), qui enregistre la donnée, retourne les ventes weekly et les ventes monthly. <br/>
-*Utilisez le fait que le code soit testé pour refactorer !*:
+**Utilisez le fait que le code soit testé pour refactorer !**:
 - Commitez le code qui marche
 - Refactorez comme il vous semble bon
 - Runnez les tests pour vérifier que ça marche
 - Commitez
 
-*Attention:* Ne perdez pas 30 minutes à refactorer. "Premature optimisation is the root of all evil".<br/>
+**Attention:** Ne perdez pas 30 minutes à refactorer. "Premature optimisation is the root of all evil".<br/>
 Regardez votre code, et faites le refactoring qui vous semble adapter maintenant, sans faire de plan sur la comète.
 6. Vous allez créer le code "tag_outlier" qui ajoute is_outlier=True si la vente est supérieure à la moyenne plus 5 fois l'écart-type. <br/>
 Commencer par créer le test.

@@ -116,7 +116,7 @@ Je testerai votre pipeline en la faisant tourner dans un Docker. Votre pipeline 
 ### Après 30 minutes
 
 La commande "uv run pytest" tourne sur votre machine. <br/>
-L'entry point "post_sales" écrit vraiment les données.
+L'entry point "post_sales" écrit vraiment les données. <br/>
 L'entry point "get_weekly_sales" lit vraiment les données.<br/>
 **-1 point si non fait après 30 minutes**<br/>
 **0 au TD si non fait après 1 heure**

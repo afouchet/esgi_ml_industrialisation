@@ -42,10 +42,10 @@ Enfin, je fournis [un CSV sur ce lien](https://drive.google.com/file/d/1WJPZQEij
 
 ### Etapes 
 
-1. Créer le code pour "post_sales" qui va stocker les données dans un CSV
-2. Créer le code pour "get_raw_sales" qui retourne les données ingérées. Valider 1 & 2 avec le test d'intégration ```uv run pytest```
-3. Modifier le "test_post_sales" pour qu'il teste l'idempotence. <br/>
+1. Créer le code pour "get_raw_sales" qui retourne les données ingérées. Validez le code avec le test d'intégration ```uv run pytest```
+2. Modifier le "test_post_sales" pour qu'il teste l'idempotence. <br/>
 i.e. Vous envoyez 2 fois la même données, et il ne la compte pas en double.
+3. Rendez post_sales idempotent
 4. Créer un test "get_monthly_sales", ressemblant à ceci
 ```python
 def test_get_monthly_sales():

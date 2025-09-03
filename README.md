@@ -239,3 +239,19 @@ $$ sales\_v2(M)  = sales\_v1(M) * (1 + d * marketing ) * (1 + e * price\_change)
 J'ai ensuite ajouté, au hasard sur certains mois, des contraintes "objectifs commerciaux", puis des contraintes de stock.
 
 Vous pouvez faire votre propre modèle qui reprend ces équations, avec les paramètres a, b, c....,e, et utilser scipy.optimize pour trouver les paramètres idéaux.
+
+### Après 30 minutes
+
+Les tests "test_model_prev_month" & "test_model_same_month_last_year"
+**-1 point si non fait après 30 minutes**<br/>
+**0 au TD si non fait après 1 heure**
+
+### Après 1 heure
+
+Vous avez fait l'auto-regressive model.<br/>
+Le test "test_autoregressive_model" passe. <br/>
+**-1 point si non fait après 1 heure**
+
+## A rendre
+
+Votre code src/. 

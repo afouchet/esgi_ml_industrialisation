@@ -126,7 +126,9 @@ L'entry point "get_weekly_sales" lit vraiment les données.<br/>
 Vous avez fait "get_monthly_sales", et vous avez réfléchi à comment refactorer votre code. <br/>
 **-1 point si non fait après 30 minutes**
 
-**A rendre**: le code, avec un fichier app_csv.py où l'app fonctionne en enregistrant les données sur des CSV et app_sql.py où l'app enregistre sur une base de données sql lite, ainsi que vos fichieres de tests<br/>
+## A rendre
+
+Le code, avec un fichier app_csv.py où l'app fonctionne en enregistrant les données sur des CSV et app_sql.py où l'app enregistre sur une base de données sql lite, ainsi que vos fichieres de tests<br/>
 
 Envoyer à foucheta@gmail.com avec l'objet "[ESGI][ML_INDUS]TP1"
 

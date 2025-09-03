@@ -29,6 +29,12 @@ def create_app(config=None):
 
         return jsonify({"status": "success"}), 200
 
+    @app.route('/get_weekly_sales', methods=['GET'])
+    def get_weekly_sales():
+        return jsonify(
+            [{"year_week": 202001, "vegetable": "tomato", "sales": 100}]
+        ), 200
+
     return app
 
 

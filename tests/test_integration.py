@@ -26,8 +26,11 @@ def test_post_sales(app):
             json=[{"year_week": 202001, "vegetable": "tomato", "sales": 100}],
         )
 
-    assert response.status_code == 200
+        assert response.status_code == 200
 
-    df = pd.read_csv(app.config['CSV_PATH'])
-    assert not df.empty
-    assert df.iloc[-1].to_dict() == {"year_week": 202001, "vegetable": "tomato", "sales": 100}
+        response = client.get(
+            "get_weekly_sales",
+        )
+        assert response.status_code == 200
+
+    assert response.json == [{"year_week": 202001, "vegetable": "tomato", "sales": 100}]

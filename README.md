@@ -10,10 +10,19 @@ uv run pytest
 ```
 
 ### Sur Windows:
+
+#### WSL (recommandé) -> Utilisez l'installation Mac/Linux
+
+#### Windows terminal
+
 ```bash
 scripts\setup.bat
 uv run pytest
 ```
+
+### PyCharm
+
+Si vous avez PyCharm, cliquez droit sur le dossier "src/" -> "Mark directory as" -> "Sources Root"
 
 ## TD1: Industrialization de la pipeline data
 

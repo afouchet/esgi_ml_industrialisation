@@ -9,3 +9,9 @@ dependencies = [
     "pandas>=2.3.2",
     "pytest>=8.4.1",
 ]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-dir]
+"" = "src"

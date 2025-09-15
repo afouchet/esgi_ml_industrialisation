@@ -52,9 +52,12 @@ Enfin, je fournis [un CSV sur ce lien](https://drive.google.com/file/d/1WJPZQEij
 ### Etapes 
 
 1. Créer le code pour "get_raw_sales" qui retourne les données ingérées. Validez le code avec le test d'intégration ```uv run pytest```
+
 2. Modifier le "test_post_sales" pour qu'il teste l'idempotence. <br/>
 i.e. Vous envoyez 2 fois la même données, et il ne la compte pas en double.
+
 3. Rendez post_sales idempotent
+
 4. Créer un test "get_monthly_sales", ressemblant à ceci
 ```python
 def test_get_monthly_sales():
@@ -81,6 +84,7 @@ Il est **fortement** suggéré de créer le test unitaire avec les cas probléma
 Ce test a plus sa place dans tests/unit/... que dans tests/test_integration.py<br/>
 Dans les tests d'intégration, on vérifie que les composants se parlent bien entre eux. Ce sont des tests haut niveau<br/>
 Dans les tests unitaires, on s'assure du bon fonctionnement d'une brique. C'est là où on rentre dans le détail du fonctionnement, des edge-cases.
+
 5. Il est temps de réfléchir à la maintenabilité du code<br/>
 app.py doit juste déclarer les entry points, et appeler les bons "services" (où on mettra la logique). <br/>
 Vous pouvez déclarer un service "data" (services/data.py), qui enregistre la donnée, retourne les ventes weekly et les ventes monthly. <br/>
@@ -92,10 +96,12 @@ Vous pouvez déclarer un service "data" (services/data.py), qui enregistre la do
 
 **Attention:** Ne perdez pas 30 minutes à refactorer. "Premature optimisation is the root of all evil".<br/>
 Regardez votre code, et faites le refactoring qui vous semble adapter maintenant, sans faire de plan sur la comète.
+
 6. Vous allez créer le code "tag_outlier" qui ajoute is_outlier=True si la vente est supérieure à la moyenne plus 5 fois l'écart-type. <br/>
 Commencer par créer le test.<br/>
 Faites le code.<br/>
 Faut-il prendre moyenne globale ou légume par légume ? Pourquoi ?
+
 7. Changer le modèle pour ne plus écrire dans un CSV, mais dans une table SQL Lite.<br/>
 Si vous avez bien travaillé, le changement isolé et n'impacte pas les entry points ni la pipeline.<br/>
 Si le changement semble compliqué:

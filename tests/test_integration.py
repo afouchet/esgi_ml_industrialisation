@@ -25,6 +25,10 @@ def test_post_sales(app):
             "post_sales",
             json=[{"year_week": 202001, "vegetable": "tomato", "sales": 100}],
         )
+        response = client.post(
+            "post_sales",
+            json=[{"year_week": 202001, "vegetable": "tomato", "sales": 100}],
+        )
 
         assert response.status_code == 200
 

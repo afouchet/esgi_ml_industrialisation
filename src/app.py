@@ -39,7 +39,7 @@ def create_app(config=None):
     def get_monthly_sales():
         df = pd.read_csv(app.config['CSV_PATH'])
         df["date"] = pd.to_datetime(df["year_week"].apply(str) + "3", format="%G%V%u")
-        df["year_month"] = df["date"].dt.strftime("%Y%m")
+        df["year_month"] = df["date"].dt.strftime("%Y%m").astype(int)
 
         df = df.groupby(["year_month", "vegetable"], as_index=False)["sales"].sum()
 

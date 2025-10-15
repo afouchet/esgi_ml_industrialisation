@@ -25,6 +25,7 @@ def create_app(config=None):
         else:
             df = df_new
 
+        df = df.drop_duplicates(subset=["vegetable", "year_week"], keep="last")
         df.to_csv(app.config['CSV_PATH'], index=False)
 
         return jsonify({"status": "success"}), 200

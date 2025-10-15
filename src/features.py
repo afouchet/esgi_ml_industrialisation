@@ -33,3 +33,16 @@ def _get_df_days_per_year_month(serie_year_week):
     df_prev_month = df_prev_month[df_prev_month["nb_days"] > 0]
 
     return pd.concat([df, df_prev_month])
+
+
+def tag_outliers(df, cut_stdev=5):
+    df_stat = df.groupby("vegetable").agg({"sales": ("mean", "std")})
+    df_stat.columns = ["mean", "std"]
+    df_stat["sales_min"] = df_stat["mean"] - cut_stdev * df_stat["std"]
+    df_stat["sales_max"] = df_stat["mean"] + cut_stdev * df_stat["std"]
+
+    df_compare = df.join(df_stat[["sales_min", "sales_max"]], on="vegetable")
+
+    df["is_outlier"] = (df["sales"] < df_compare["sales_min"]) | (df["sales"] > df_compare["sales_max"])
+
+    return df

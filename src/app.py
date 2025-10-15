@@ -35,6 +35,16 @@ def create_app(config=None):
         df = pd.read_csv(app.config['CSV_PATH'])
         return jsonify(df.to_dict(orient="records")), 200
 
+    @app.route('/get_monthly_sales', methods=['GET'])
+    def get_monthly_sales():
+        df = pd.read_csv(app.config['CSV_PATH'])
+        df["date"] = pd.to_datetime(df["year_week"].apply(str) + "3", format="%G%V%u")
+        df["year_month"] = df["date"].dt.strftime("%Y%m")
+
+        df = df.groupby(["year_month", "vegetable"], as_index=False)["sales"].sum()
+
+        return jsonify(df.to_dict(orient="records")), 200
+
     return app
 
 

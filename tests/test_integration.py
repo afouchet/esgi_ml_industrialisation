@@ -38,3 +38,23 @@ def test_post_sales(app):
         assert response.status_code == 200
 
     assert response.json == [{"year_week": 202001, "vegetable": "tomato", "sales": 100}]
+
+def test_get_monthly_sales(app):
+    with app.test_client() as client:
+        response = client.post(
+            "post_sales",
+            json=[{"year_week": 202001, "vegetable": "tomato", "sales": 100}],
+        )
+        response = client.post(
+            "post_sales",
+            json=[{"year_week": 202002, "vegetable": "tomato", "sales": 50}],
+        )
+
+        assert response.status_code == 200
+
+        response = client.get(
+            "get_monthly_sales",
+        )
+        assert response.status_code == 200
+
+    assert response.json == [{"year_month": 202001, "vegetable": "tomato", "sales": 150}]

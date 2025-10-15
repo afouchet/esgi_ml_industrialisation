@@ -4,19 +4,22 @@ import pytest
 import tempfile
 
 from app import create_app
+from services.sales import DB, SaleWeeklyRaw
 
 @pytest.fixture
 def app():
-    temp_csv = tempfile.NamedTemporaryFile(delete=False, suffix='.csv')
-    temp_csv.close()
-
-    config = {"TESTING": True, "CSV_PATH": temp_csv.name}
+    config = {
+        "TESTING": True,
+        "SQLALCHEMY_DATABASE_URI": "sqlite:///:memory:"
+    }
 
     app = create_app(config)
 
     yield app
 
-    os.remove(temp_csv.name)
+    with app.app_context():
+        DB.drop_all()
+
 
 
 def test_post_sales(app):

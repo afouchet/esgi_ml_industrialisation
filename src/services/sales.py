@@ -1,31 +1,45 @@
+from flask_sqlalchemy import SQLAlchemy
 import os
 import pandas as pd
 from pathlib import Path
 
+DB = SQLAlchemy()
 
-PATH_CSV = None
 
-
-def init_database(config):
-    global PATH_CSV
-    PATH_CSV = Path(config["CSV_PATH"])
+def init_database(app):
+    DB.init_app(app)
 
 
 def get_weekly_sales():
-    if PATH_CSV is None:
-        raise ValueError("Initiate dabase first")
+    entries = DB.session.query(SaleWeeklyRaw)
 
-    if PATH_CSV.exists() and os.path.getsize(PATH_CSV) > 0:
-        return pd.read_csv(PATH_CSV)
-    else:
-        return pd.DataFrame([])
+    return pd.DataFrame([e.json() for e in entries])
 
 
 def add_weekly_sales(data):
-    df_new = pd.DataFrame(data)
-    df_old = get_weekly_sales()
+    for row in data:
+        entry = SaleWeeklyRaw.query.filter_by(
+            year_week=row["year_week"], vegetable=row["vegetable"]
+        ).first()
 
-    df = pd.concat([df_old, df_new])
+        if entry:
+            entry.sales = row["sales"]
+        else:
+            entry = SaleWeeklyRaw(**row)
+            DB.session.add(entry)
 
-    df = df.drop_duplicates(subset=["vegetable", "year_week"], keep="last")
-    df.to_csv(PATH_CSV, index=False)
+    DB.session.commit()
+
+
+class SaleWeeklyRaw(DB.Model):
+    id = DB.Column(DB.Integer, primary_key=True)
+    year_week = DB.Column(DB.Integer, nullable=False)
+    vegetable = DB.Column(DB.String(80), nullable=False)
+    sales = DB.Column(DB.Float, nullable=False)
+
+    def json(self):
+        return {
+            "year_week": self.year_week,
+            "vegetable": self.vegetable,
+            "sales": self.sales,
+    }

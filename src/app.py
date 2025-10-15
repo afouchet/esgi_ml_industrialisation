@@ -17,7 +17,11 @@ def create_app(config=None):
 
     app.config.update(config)
 
-    services.sales.init_database(config)
+    services.sales.init_database(app)
+
+    with app.app_context():
+        from services.sales import SaleWeeklyRaw, DB
+        DB.create_all()
 
     @app.route('/post_sales', methods=['POST'])
     def post_sales():

@@ -21,13 +21,13 @@ def _get_df_days_per_year_month(serie_year_week):
     days_in_prev_month = (7 - last_day.dt.day).clip(lower=0)
 
     df = pd.DataFrame([])
-    df["year_week"] = last_day.dt.strftime("%G%V")
-    df["year_month"] = last_day.dt.strftime("%G%m")
+    df["year_week"] = last_day.dt.strftime("%G%V").astype(int)
+    df["year_month"] = last_day.dt.strftime("%G%m").astype(int)
     df["nb_days"] = last_day.dt.day.clip(upper=7)
 
     df_prev_month = pd.DataFrame([])
-    df_prev_month["year_week"] = last_day.dt.strftime("%G%V")
-    df_prev_month["year_month"] = (last_day - pd.Timedelta(days=7)).dt.strftime("%G%m")
+    df_prev_month["year_week"] = last_day.dt.strftime("%G%V").astype(int)
+    df_prev_month["year_month"] = (last_day - pd.Timedelta(days=7)).dt.strftime("%G%m").astype(int)
     df_prev_month["nb_days"] = days_in_prev_month
 
     df_prev_month = df_prev_month[df_prev_month["nb_days"] > 0]

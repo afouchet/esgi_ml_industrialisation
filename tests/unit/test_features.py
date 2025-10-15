@@ -1,6 +1,6 @@
 import pandas as pd
 
-from features import compute_monthly_sales
+from features import compute_monthly_sales, tag_outliers
 
 def test_compute_monthly_sales():
     """
@@ -29,7 +29,6 @@ def test_compute_monthly_sales():
     pd.testing.assert_frame_equal(df_res, df_expected, check_dtype=False)
 
 
-"""
 def test_tag_outliers():
     df = pd.DataFrame(
         columns=["year_week", "vegetable", "sales"],
@@ -102,4 +101,3 @@ def test_tag_outliers():
     df_res = tag_outliers(df)
 
     pd.testing.assert_frame_equal(df_res, df_expected)
-"""

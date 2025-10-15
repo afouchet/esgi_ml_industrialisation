@@ -21,3 +21,11 @@ def get_weekly_sales():
         return pd.DataFrame([])
 
 
+def add_weekly_sales(data):
+    df_new = pd.DataFrame(data)
+    df_old = get_weekly_sales()
+
+    df = pd.concat([df_old, df_new])
+
+    df = df.drop_duplicates(subset=["vegetable", "year_week"], keep="last")
+    df.to_csv(PATH_CSV, index=False)

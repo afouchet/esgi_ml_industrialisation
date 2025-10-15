@@ -22,13 +22,8 @@ def create_app(config=None):
     @app.route('/post_sales', methods=['POST'])
     def post_sales():
         data = request.json
-        df_new = pd.DataFrame(data)
-        df_old = models.sales.get_weekly_sales()
 
-        df = pd.concat([df_old, df_new])
-
-        df = df.drop_duplicates(subset=["vegetable", "year_week"], keep="last")
-        df.to_csv(app.config['CSV_PATH'], index=False)
+        models.sales.add_weekly_sales(data)
 
         return jsonify({"status": "success"}), 200
 

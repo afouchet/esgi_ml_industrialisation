@@ -31,9 +31,8 @@ def create_app(config=None):
 
     @app.route('/get_weekly_sales', methods=['GET'])
     def get_weekly_sales():
-        return jsonify(
-            [{"year_week": 202001, "vegetable": "tomato", "sales": 100}]
-        ), 200
+        df = pd.read_csv(app.config['CSV_PATH'])
+        return jsonify(df.to_dict(orient="records")), 200
 
     return app
 

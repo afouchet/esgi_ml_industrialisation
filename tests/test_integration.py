@@ -43,11 +43,11 @@ def test_get_monthly_sales(app):
     with app.test_client() as client:
         response = client.post(
             "post_sales",
-            json=[{"year_week": 202001, "vegetable": "tomato", "sales": 100}],
+            json=[{"year_week": 202002, "vegetable": "tomato", "sales": 100}],
         )
         response = client.post(
             "post_sales",
-            json=[{"year_week": 202002, "vegetable": "tomato", "sales": 50}],
+            json=[{"year_week": 202003, "vegetable": "tomato", "sales": 50}],
         )
 
         assert response.status_code == 200

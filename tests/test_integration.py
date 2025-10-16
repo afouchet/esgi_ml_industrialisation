@@ -15,6 +15,10 @@ def app():
 
     app = create_app(config)
 
+    with app.app_context():
+        from services.sales import SaleWeeklyRaw, DB
+        DB.create_all()
+
     yield app
 
     with app.app_context():

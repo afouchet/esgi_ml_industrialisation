@@ -19,10 +19,6 @@ def create_app(config=None):
 
     services.sales.init_database(app)
 
-    with app.app_context():
-        from services.sales import SaleWeeklyRaw, DB
-        DB.create_all()
-
     @app.route('/post_sales', methods=['POST'])
     def post_sales():
         data = request.json

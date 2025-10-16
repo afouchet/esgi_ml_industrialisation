@@ -2,9 +2,9 @@ import pandas as pd
 from sklearn.linear_model import Ridge
 
 def make_predictions(config):
-    df_sales = pd.read_csv(config["data"]["sales"])
+    data_dict: dict[str, pd.DataFrame] = make_data_catalog(config)
 
-    df = make_features(df_sales, config)
+    df = make_features(data_dict, config)
 
     model = build_model(config)
 
@@ -21,7 +21,38 @@ def make_predictions(config):
     return df_test["prediction"].reset_index()
 
 
-def make_features(df_sales, config):
+def make_data_catalog(config):
+    return {
+        source: pd.read_csv(path) for source, path in config["data"].items()
+    }
+
+
+def make_features(data_dict, config):
+    dfs = []
+    features = config.get("features", [])
+
+    if (
+            "past_sales" in features
+            or config["model"] in ["PrevMonthSale", "SameMonthLastYearSales"]
+    ):
+        df_sales = _build_sales_features(data_dict["sales"], config)
+        dfs.append(df_sales)
+
+    if "marketing" in features:
+        df_marketing = data_dict["marketing"]
+        dfs.append(df_marketing)
+    
+    df = None
+    for a_df in dfs:
+        if df is None:
+            df = a_df
+        else:
+            df = df.merge(a_df)
+
+    return df.set_index(["dates", "item_id"]).dropna()
+
+
+def _build_sales_features(df_sales, config):
     df = df_sales.copy()
 
     df["sales_last_month"] = df.groupby("item_id")["sales"].shift(1)
@@ -29,8 +60,7 @@ def make_features(df_sales, config):
     df["sales_mean_last_year"] = compute_rolling_mean(df, nb_months=12)
     df["growth"] = compute_growth(df).clip(lower=0.7, upper=1.3)
 
-    return df.set_index(["dates", "item_id"]).dropna()
-
+    return df
 
 def build_model(config):
     if config["model"] == "PrevMonthSale":

@@ -37,7 +37,7 @@ def test_model_same_month_last_year():
     pd.testing.assert_frame_equal(df_expected, df_pred)
     
 
-def tst_autoregressive_model():
+def test_autoregressive_model():
     config = {
         "data": {
             "sales": "data/raw/sales.csv",

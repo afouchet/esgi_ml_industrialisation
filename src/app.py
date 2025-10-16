@@ -6,14 +6,9 @@ import os
 import services
 import features
 
-PATH_CSV = "data/raw/db.csv"
-
 def create_app(config=None):
     config = config or {}
     app = Flask(__name__)
-
-    if "CSV_PATH" not in config:
-        config["CSV_PATH"] = PATH_CSV
 
     app.config.update(config)
 

@@ -95,9 +95,10 @@ def test_compute_rolling_means():
         ],
     )
 
-    df = model.compute_rolling_mean(df_train, nb_months=3, col_name="last_quarter")
+    sales_last_quarter = model.compute_rolling_mean(df_train, nb_months=3)
+    df_train["last_quarter"] = sales_last_quarter
 
-    pd.testing.assert_frame_equal(df, df_expected)
+    pd.testing.assert_frame_equal(df_train, df_expected)
 
 
 def tst_marketing_model():

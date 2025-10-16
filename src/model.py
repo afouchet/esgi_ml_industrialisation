@@ -28,6 +28,7 @@ def make_features(df_sales, config):
 
     df["sales_last_month"] = df.groupby("item_id")["sales"].shift(1)
     df["sales_last_year"] = df.groupby("item_id")["sales"].shift(12)
+    df["sales_mean_last_year"] = compute_rolling_mean(df, nb_months=12)
 
     return df.set_index(["dates", "item_id"]).dropna()
 
@@ -60,9 +61,7 @@ class PredictLastYearSale():
         return X["sales_last_year"]
 
 
-def compute_rolling_mean(df, nb_months, col_name):
-    sales_quarter = df.groupby(["item_id"])["sales"].shift(1).rolling(3).mean()
+def compute_rolling_mean(df, nb_months):
+    sales_rolling = df.groupby(["item_id"])["sales"].shift(1).rolling(nb_months).mean()
 
-    df[col_name] = sales_quarter
-
-    return df
+    return sales_rolling

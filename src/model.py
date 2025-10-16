@@ -58,3 +58,11 @@ class PredictLastYearSale():
 
     def predict(self, X):
         return X["sales_last_year"]
+
+
+def compute_rolling_mean(df, nb_months, col_name):
+    sales_quarter = df.groupby(["item_id"])["sales"].shift(1).rolling(3).mean()
+
+    df[col_name] = sales_quarter
+
+    return df

@@ -65,3 +65,11 @@ def compute_rolling_mean(df, nb_months):
     sales_rolling = df.groupby(["item_id"])["sales"].shift(1).rolling(nb_months).mean()
 
     return sales_rolling
+
+def compute_growth(df):
+    df = df.copy()
+    df["past_quarter"] = compute_rolling_mean(df, nb_months=3)
+    df["last_year_past_quarter"] = df.groupby("item_id")["past_quarter"].shift(12)
+
+    return df["past_quarter"] / df["last_year_past_quarter"]
+    

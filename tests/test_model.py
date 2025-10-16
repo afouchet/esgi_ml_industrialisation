@@ -53,7 +53,7 @@ def test_autoregressive_model():
 
     r2 = r2_score(df_true["sales"], df_pred["prediction"])
 
-    assert r2 >= 0.8019
+    assert r2 >= 0.8405
 
 
 def test_compute_rolling_means():
@@ -196,7 +196,7 @@ def test_compute_growth_factor():
     pd.testing.assert_frame_equal(df_train, df_expected)
 
 
-def tst_marketing_model():
+def test_marketing_model():
     config = {
         "data": {
             "sales": "data/raw/sales.csv",
@@ -211,8 +211,9 @@ def tst_marketing_model():
 
     df_true = pd.read_csv("data/raw/sales_to_predict.csv")
 
-    mse = mean_squared_error(df_true["sales"], df_pred["prediction"])
-    assert mse == pytest.approx(0.8019,rel=1e-3)
+    r2 = r2_score(df_true["sales"], df_pred["prediction"])
+
+    assert r2 > 0.8410
 
 
 def tst_price_model():

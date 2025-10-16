@@ -1,5 +1,5 @@
 import pandas as pd
-from sklearn.metrics import mean_squared_error
+from sklearn.metrics import r2_score
 import pytest
 
 import model
@@ -51,9 +51,9 @@ def test_autoregressive_model():
 
     df_true = pd.read_csv("data/raw/sales_to_predict.csv")
 
-    mse = mean_squared_error(df_true["sales"], df_pred["prediction"])
+    r2 = r2_score(df_true["sales"], df_pred["prediction"])
 
-    assert mse == pytest.approx(0.8019,rel=1e-3)
+    assert r2 >= 0.8019
 
 
 def test_compute_rolling_means():

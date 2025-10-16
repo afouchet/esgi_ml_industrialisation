@@ -29,6 +29,7 @@ def make_features(df_sales, config):
     df["sales_last_month"] = df.groupby("item_id")["sales"].shift(1)
     df["sales_last_year"] = df.groupby("item_id")["sales"].shift(12)
     df["sales_mean_last_year"] = compute_rolling_mean(df, nb_months=12)
+    df["growth"] = compute_growth(df).clip(lower=0.7, upper=1.3)
 
     return df.set_index(["dates", "item_id"]).dropna()
 

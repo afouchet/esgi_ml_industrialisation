@@ -34,8 +34,7 @@ def create_app(config=None):
 
     @app.route('/get_monthly_sales', methods=['GET'])
     def get_monthly_sales():
-        df_weekly = services.sales.get_weekly_sales()
-        df_monthly = features.compute_monthly_sales(df_weekly)
+        df_monthly = services.sales.get_monthly_sales()
 
         return jsonify(df_monthly.to_dict(orient="records")), 200
 

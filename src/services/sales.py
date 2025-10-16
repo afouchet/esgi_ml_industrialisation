@@ -3,6 +3,8 @@ import os
 import pandas as pd
 from pathlib import Path
 
+import features
+
 DB = SQLAlchemy()
 
 
@@ -14,6 +16,11 @@ def get_weekly_sales():
     entries = DB.session.query(SaleWeeklyRaw)
 
     return pd.DataFrame([e.json() for e in entries])
+
+
+def get_monthly_sales():
+    df_weekly = get_weekly_sales()
+    return features.compute_monthly_sales(df_weekly)
 
 
 def add_weekly_sales(data):

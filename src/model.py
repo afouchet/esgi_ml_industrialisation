@@ -6,18 +6,16 @@ def make_predictions(config):
 
     df = make_features(df_sales, config)
 
-    df_train = df.query("dates < @config['start_test']")
-    y_train = df_train.pop("sales")
-
-    df_test = df.query("dates >= @config['start_test']")
-    y_test = df_test.pop("sales")
-
     model = build_model(config)
 
-    model.fit(df_train, y_train)
+    X_train, X_test, y_train, y_test = split_train_test(df, config)
 
-    pred = model.predict(df_test)
+    model.fit(X_train, y_train)
 
+    pred = model.predict(X_test)
+
+    # For output convienence, I'd rather have a full df with pred
+    df_test = X_test
     df_test["prediction"] = pred
 
     return df_test["prediction"].reset_index()
@@ -43,6 +41,16 @@ def build_model(config):
         return Ridge()
 
     raise ValueError(f"Unknown model {config['model']}")
+
+
+def split_train_test(df, config):
+    X_train = df.query("dates < @config['start_test']")
+    y_train = X_train.pop("sales")
+
+    X_test = df.query("dates >= @config['start_test']")
+    y_test = X_test.pop("sales")
+
+    return X_train, X_test, y_train, y_test
 
 
 class PredictPrevMonthSale():

@@ -2,7 +2,6 @@
 import requests
 import time
 import concurrent.futures as concurrent_futures
-import matplotlib.pyplot as plt
 import numpy as np
 import json
 import os

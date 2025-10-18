@@ -141,6 +141,20 @@ L'entry point "get_weekly_sales" lit vraiment les données.<br/>
 Vous avez fait "get_monthly_sales", et vous avez réfléchi à comment refactorer votre code. <br/>
 **-1 point si non fait après 1 heure**
 
+## Mon evaluation
+
+Dans tests/test_td1_prof.py, vous avez un exemple des tests que je ferai pour évaluer votre code.
+Je ferai un
+```bash
+python src/app.py
+```
+Pour lancer votre application, et
+```bash
+pytest tests/test_td1_prof.py
+```
+Pour faire des requêtes sur votre API et vérifier qu'elle fonctionne bien comme attendu. <br/>
+Assurez-vous que votre application marche bien avec mon fichier de test.
+
 ## A rendre
 
 Le code, avec un fichier app_csv.py où l'app fonctionne en enregistrant les données sur des CSV et app_sql.py où l'app enregistre sur une base de données sql lite, ainsi que vos fichieres de tests<br/>

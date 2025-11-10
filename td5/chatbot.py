@@ -67,7 +67,7 @@ class ChatBot:
         In a real implementation, you would need to install openai and set up API key
         """
         res = CLIENT.chat.completions.create(
-            model="gemma2-9b-it",
+            model="openai/gpt-oss-20b",
             messages=[
                 {"role": "system", "content": role},
                 {"role": "user", "content": prompt},

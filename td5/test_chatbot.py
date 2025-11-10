@@ -52,14 +52,7 @@ def tst_run_sql_query__created_undo_actions__insert():
     # NOTE: better to have insert return an id, and "DELETE FROM table where ID = {the_id}"
     sql = """INSERT INTO purchases (user_id, drug_id, quantity, unit_price, total_amount, purchase_date)
 VALUES (2, 2, 10, 0.01, 0.1, '2025-07-01');"""
-    sql_undo = """
-DELETE FROM purchases
-  WHERE user_id = 2
-    and drug_id = 2
-    and quantity = 10
-    and unit_price = 0.01
-    and total_amount = 0.1
-    and purchase_date = '2025-07-01';"""
+    sql_undo = "DELETE FROM purchases WHERE user_id = 2 AND drug_id = 2 AND quantity = 10 AND unit_price = 0.01 AND total_amount = 0.1 AND purchase_date = '2025-07-01'"
 
     bot = ChatBot()
 

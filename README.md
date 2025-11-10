@@ -379,3 +379,91 @@ Les tests sont un vaste sujet, mais ils sont cruciaux pour l'industrialisation d
 
 Envoyez-moi votre code zippé à foucheta@gmail.com, avec le sujet [ESGI][ML_INDUS] TD4.
 Envoyez moi aussi un **court** document expliquant ce que vous avez fait pour les parties "modularités", "configuration", "unit-test" (où était l'erreur)
+
+## TD5: ML-security: chatbot
+
+On a créé un Chatbot pour un e-commerce de médicaments. Le bot prend une question d'un utilisateur, fait une requête SQL pour trouver, dans nos bases les réponses à ses questions, puis répond. Il est prévu que l'utilisateur puisse demander:
+- Quels ont été mes précédents achats ?
+- A quelle adresse me livres-tu ?
+- Je veux commander n boîtes de médicament X.
+
+Néanmoins, il y a d'énormes failles de sécurité dans l'implémentation actuelle. <br/>
+En l'état, un utilisateur peut:
+- Demander les informations des autres utilisateurs (dont leur numéro de carte de crédit)
+- Demander les usernames & password hash des admins
+- Commander des médicaments en changeant le prix
+- Changer le status d'un médicament, pour qu'il devienne achetable sans ordonnance.
+
+### Setup
+
+Vous trouverez l'implémentation du chatbot dans td5/chatbot.py<br/>
+Vous trouverez sur [ce lien](https://drive.google.com/file/d/1sPh1r6Tnoqg4K5hrMsxOqpyJkKtB-sjv/view?usp=sharing) un zip avec les CSV pour charger la base de données, à dézipper dans data/raw/td5.<br/>
+Allez sur [Groq](https://groq.com/) pour obtenir une clé API permettant de faire tourner le LLM "gemma2-9b-it" "gratuitement" (dans la limite du nombre de requête)
+Créer un fichier "conf.yml" avec "groq_key: YOUR_API_KEY"<br/>
+
+Normalement, si vous lancez
+```bash
+python td5/chatbot.py
+```
+vous pouvez voir le résultat des différentes requêtes, dont les interdites.
+
+### A faire
+
+#### Rapport, intro
+
+Sur un document texte, écrire (rapidement, en bullet point), les mesures de sécurité à prendre sur un tel projet ML
+
+#### Test 1: Human in the loop
+
+On veut que des humains valident les requêtes SQL qui modifient la base de données (insert, update ou delete)
+
+Modifier ChatBot.run_sql_query pour que le test "test_run_sql_query__to_validate_action" soit vert
+
+#### Test 2-3: Create undo actions, implementation
+
+On veut pouvoir annuler les actions prises.
+Changer "run_sql_query" pour que les tests "test_run_sql_query__created_undo_actions__update" et "test_run_sql_query__created_undo_actions__insert" passent
+
+#### Test 4: Create undo actions, correct testing
+
+Les tests 2 & 3 utilisaient des détails d'implémentation (que ChatBot tient des listes "_queries_ran" et "_queries_to_undo".
+
+Complétez le test "test_run_sql_query__undo_action" pour qu'il teste que notre ChatBot ait une API pour annuler des actions SANS savoir comment il le fait.
+
+Le test ne doit utiliser que l'API publique de ChatBot:
+- bot.get_table(table_name) -> return full table
+- bot.run_sql_query(sql_query) -> runs the query
+- bot.list_ran_queries() -> A IMPLEMENTER return dictionnary {query_id: sql_query that was ran}
+- bot.undo_query(query_id) -> A IMPLEMENTER undo the action done by "query_id"
+
+Créer un scenario de tests où:
+- un utilisateur run_sql_query
+- la table est modifiée
+- L'utilisateur utilise "list_ran_queries" et "undo_query" pour undo son action
+- la table est revenue à son état initial
+
+#### Test 5: Filter user scope
+
+On veut qu'un utilisateur ne puisse accéder qu'aux données qui lui sont liés.
+Changer run_sql_query pour que, si l'utilisateur fait un select sur une table avec un champ user_id, on ajoute un filtre "where user_id  = {user_id}"
+
+#### Test 6: Post query autovalidated
+
+On autorise certaines requêtes à modifier la base sans modification humaine.<br/>
+Par exemple, si un utilisateur veut modifier une information à lui, comme son email, son adresse, son numéro de téléphone.
+
+Modifier "run_sql_query" de sorte que le test "test_run_sql_query__autovalid_update" passe
+
+#### Test 7: Add lag
+
+Si un utilisateur spamme notre chatbot (par exemple, parce qu'il serait en train de l'attaquer et de chercher des prompts pour en extraire une information confidentielle), on veut ajouter du lag entre chacune de ses réponses.
+
+Changer "run_sql_query" pour écrire dans une table la date de chaque requête de l'utilisateur.
+
+Créer une fonction "add_lag" qui repond 0 normalement (pas de lag à ajouter), 1 si l'utilisateur a fait plus de 5 requêtes dans la dernière seconde, et 10 s'il a fait 10 requêtes ou plus dans les 10 dernières secondes.
+
+Le test "test_add_lag" doit passer
+
+#### Rapport
+
+Ajouter dans votre rapport, a postériori, quelles sont les mesures utiles ou non utiles. Que faudrait-il rajouter à ce produit ML pour le rendre safe ?

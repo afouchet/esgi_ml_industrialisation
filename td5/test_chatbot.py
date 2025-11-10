@@ -36,20 +36,8 @@ WHERE d.requires_prescription = 0;"""
     assert bot._queries_to_validate == [sql_insert, sql_update]
 
 
-def tst_run_sql_query__created_undo_actions__update():
-    sql = "UPDATE drugs SET requires_prescription = 0 WHERE drug_name = 'Oxycodone';"
-    sql_undo = "UPDATE drugs SET requires_prescription = 1 WHERE drug_name = 'Oxycodone';"
-
-    bot = ChatBot()
-
-    bot.run_sql_query(sql, user_id=1, admin=True)
-
-    assert bot._queries_ran == [sql]
-    assert bot._queries_to_undo == [sql_undo]
-
-
 def tst_run_sql_query__created_undo_actions__insert():
-    # NOTE: better to have insert return an id, and "DELETE FROM table where ID = {the_id}"
+    # !! NOTE !! use td5/sql_undoer.py to build the undo query
     sql = """INSERT INTO purchases (user_id, drug_id, quantity, unit_price, total_amount, purchase_date)
 VALUES (2, 2, 10, 0.01, 0.1, '2025-07-01');"""
     sql_undo = "DELETE FROM purchases WHERE user_id = 2 AND drug_id = 2 AND quantity = 10 AND unit_price = 0.01 AND total_amount = 0.1 AND purchase_date = '2025-07-01'"

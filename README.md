@@ -35,7 +35,7 @@ Nous travaillons pour un vendeur de légumes, qui récupère les ventes hebdomad
 Nous allons créer une API avec les entry points:
 - /post_sales/: reçoit une request POST avec data: une liste de dictionnaire {"year_week": ..., "vegetable": ...., "sales": ....} <br/>
 Cette entrée est idempotente. On stockera ces données dans la table bronze
-- /get_raw_sales/: renvoie les données brutes que nous avons reçues
+- /get_weekly_sales/: renvoie les données brutes que nous avons reçues
 - /get_monthly_sales/: renvoie les données cleanées (nom du légume standardisé. Cet entry point a l'option "remove_outliers". Si "remove_outliers=False", entraîne le modèle sur toutes les données. Si "remove_outliers=True", entraîne sur le modèle sur les données safe, qui n'ont pas été tagguées comme "unsafe" par nos algorithmes d'outlier detection.
 
 ### Point de départ
@@ -51,7 +51,7 @@ Enfin, je fournis [un CSV sur ce lien](https://drive.google.com/file/d/1WJPZQEij
 
 ### Etapes 
 
-1. Créer le code pour "get_raw_sales" qui retourne les données ingérées. Validez le code avec le test d'intégration ```uv run pytest```
+1. Créer le code pour "get_weekly_sales" qui retourne les données ingérées. Validez le code avec le test d'intégration ```uv run pytest```
 
 2. Modifier le "test_post_sales" pour qu'il teste l'idempotence. <br/>
 i.e. Vous envoyez 2 fois la même données, et il ne la compte pas en double.
@@ -123,7 +123,7 @@ Je testerai votre pipeline en la faisant tourner dans un Docker. Votre pipeline 
 - post_sales est bien idempotent pour une (year_month,vegetable)
 - Inscrire toutes les données valables d'une liste. Si la liste contient des données "A: valide", "B: valide", "C: non valide", "D: valide", je dois retrouver dans la base les données A, B, et D.
 - Tagger comme "outlier" les ventes à 5 écart-types de leur référence.
-- Votre API doit supporter 1000 requêtes par seconde (500 post, 250 get_raw_data, 250 get_monthly_data).
+- Votre API doit supporter 1000 requêtes par seconde (500 post, 250 get_weekly_data, 250 get_monthly_data).
 - Vos tests d'intégration doivent couvrir les cas mentionnés ici.
 
 ## !! Timeline !! (**Points en moins si non respectée**)

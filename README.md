@@ -147,3 +147,5 @@ Le code, avec un fichier app_csv.py où l'app fonctionne en enregistrant les don
 
 Envoyer à foucheta@gmail.com avec l'objet "[ESGI][ML_INDUS]TP1"
 
+A rendre avant le 22 mars, midi.
+

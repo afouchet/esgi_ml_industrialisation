@@ -1,5 +1,5 @@
 import pandas as pd
-from sklearn.metrics import mean_squared_error
+from sklearn.metrics import r2_score
 import pytest
 
 import model
@@ -37,22 +37,109 @@ def test_model_same_month_last_year():
     pd.testing.assert_frame_equal(df_expected, df_pred)
     
 
-def tst_autoregressive_model():
+def tst_ridge_model():
+    """make_predictions is able to fit a ridge model
+
+    features are:
+    - "last_month": sales at M-1
+    - "same_month_last_year": sales at M-12
+    """
     config = {
         "data": {
             "sales": "data/raw/sales.csv",
         },
         "start_test": "2023-07-01",
         "model": "Ridge",
-        "features": ["past_sales"],
+        "features": ["last_month", "same_month_last_year"],
     }
 
     df_pred = model.make_predictions(config)
 
     df_true = pd.read_csv("data/raw/sales_to_predict.csv")
 
-    mse = mean_squared_error(df_true["sales"], df_pred["prediction"])
-    assert mse == pytest.approx(0.8019,rel=1e-3)
+    r2 = r2_score(df_true["sales"], df_pred["prediction"])
+
+    assert r2 == pytest.approx(0.8154,rel=1e-3)
+
+
+def tst_ridge_model_adding_yearly_mean_sales():
+    """Adding a new feature to our sales features.
+    make_predictions can now compute the features "average sales over a period"
+
+    Adding feature "last_year_average" which is the average sales on past 12 months
+
+    TIP: Add a unit-test "test_compute_mean_sales_on_period"
+    with a dataframe dates, item_id, sales [not necessariliy ordered]
+    -> expected sales on period
+    TIP2: choose "sales" value so "sales_on_period" is easy to compute.
+    TIP3: Also, in test_compute_mean_sales_on_period", you don't have to take a 12-months period.
+    You can choose
+    period_nb_months=2
+    df:
+    dates      | item_id  | sales
+    2020-01-01 | 1        | 1
+    2020-02-01 | 1        | 2
+    2020-03-01 | 1        | 3
+    2020-04-01 | 1        | 4
+    2020-01-01 | 2        | 10
+    2020-02-01 | 2        | 20
+    2020-03-01 | 2        | 30
+    2020-04-01 | 2        | 40
+
+    So that
+    df_expected
+    dates      | item_id  | sales | sales_on_period
+    2020-01-01 | 1        | 1     | NaN
+    2020-02-01 | 1        | 2     | NaN
+    2020-03-01 | 1        | 3     | 1.5
+    2020-04-01 | 1        | 4     | 2.5
+    2020-01-01 | 2        | 10    | NaN
+    2020-02-01 | 2        | 20    | NaN
+    2020-03-01 | 2        | 30    | 15
+    2020-04-01 | 2        | 40    | 25
+    """
+    config = {
+        "data": {
+            "sales": "data/raw/sales.csv",
+        },
+        "start_test": "2023-07-01",
+        "model": "Ridge",
+        "features": ["last_month", "same_month_last_year", "last_year_average"],
+    }
+
+    df_pred = model.make_predictions(config)
+
+    df_true = pd.read_csv("data/raw/sales_to_predict.csv")
+
+    r2 = r2_score(df_true["sales"], df_pred["prediction"])
+
+    assert r2 == pytest.approx(0.8412497822819137,rel=1e-3)
+
+
+def tst_ridge_model__adding_growth_factor():
+    """
+    We now add a growth factor as a feature.
+    Growth factor is how much the item grew from year Y-1 to year.
+    We measure it as sales of past quarter (last 3 months)
+    over sales same quarter last year
+    """
+    config = {
+        "data": {
+            "sales": "data/raw/sales.csv",
+        },
+        "start_test": "2023-07-01",
+        "model": "Ridge",
+        "features": ["last_month", "same_month_last_year", "last_year_average", "growth"],
+    }
+
+    df_pred = model.make_predictions(config)
+
+    df_true = pd.read_csv("data/raw/sales_to_predict.csv")
+
+    r2 = r2_score(df_true["sales"], df_pred["prediction"])
+
+    # R2 score dimishied. Why do you think that is ?
+    assert r2 == pytest.approx(0.8405936764987022,rel=1e-3)
 
 
 def tst_marketing_model():
@@ -63,15 +150,15 @@ def tst_marketing_model():
         },
         "start_test": "2023-07-01",
         "model": "Ridge",
-        "features": ["past_sales", "marketing"],
+        "features": ["last_month", "same_month_last_year", "last_year_average", "marketing"],
     }
 
     df_pred = model.make_predictions(config)
 
     df_true = pd.read_csv("data/raw/sales_to_predict.csv")
 
-    mse = mean_squared_error(df_true["sales"], df_pred["prediction"])
-    assert mse == pytest.approx(0.8019,rel=1e-3)
+    r2 = r2_score(df_true["sales"], df_pred["prediction"])
+    assert r2 == pytest.approx(0.8019,rel=1e-3)
 
 
 def tst_price_model():
@@ -83,16 +170,16 @@ def tst_price_model():
         },
         "start_test": "2023-07-01",
         "model": "Ridge",
-        "features": ["past_sales", "marketing", "price"],
+        "features": ["last_month", "same_month_last_year", "last_year_average", "marketing", "price"],
     }
 
     df_pred = model.make_predictions(config)
 
     df_true = pd.read_csv("data/raw/sales_to_predict.csv")
 
-    mse = mean_squared_error(df_true["sales"], df_pred["prediction"])
+    r2 = r2_score(df_true["sales"], df_pred["prediction"])
 
-    assert mse == pytest.approx(0.8446,rel=1e-3)
+    assert r2 == pytest.approx(0.8446,rel=1e-3)
 
 
 def tst_stock_model():
@@ -105,16 +192,16 @@ def tst_stock_model():
         },
         "start_test": "2023-07-01",
         "model": "Ridge",
-        "features": ["past_sales", "marketing", "price", "stock"],
+        "features": ["last_month", "same_month_last_year", "last_year_average", "marketing", "price", "stock"],
     }
 
     df_pred = model.make_predictions(config)
 
     df_true = pd.read_csv("data/raw/sales_to_predict.csv")
 
-    mse = mean_squared_error(df_true["sales"], df_pred["prediction"])
+    r2 = r2_score(df_true["sales"], df_pred["prediction"])
 
-    assert mse == pytest.approx(0.8446,rel=1e-3)
+    assert r2 == pytest.approx(0.8446,rel=1e-3)
 
 
 def tst_model_with_objectives():
@@ -128,16 +215,16 @@ def tst_model_with_objectives():
         },
         "start_test": "2023-07-01",
         "model": "Ridge",
-        "features": ["past_sales", "marketing", "price", "stock", "objectives"],
+        "features": ["last_month", "same_month_last_year", "last_year_average", "marketing", "price", "stock", "objectives"],
     }
 
     df_pred = model.make_predictions(config)
 
     df_true = pd.read_csv("data/raw/sales_to_predict.csv")
 
-    mse = mean_squared_error(df_true["sales"], df_pred["prediction"])
+    r2 = r2_score(df_true["sales"], df_pred["prediction"])
 
-    assert mse == pytest.approx(0.8446,rel=1e-3)
+    assert r2 == pytest.approx(0.8446,rel=1e-3)
 
 def tst_custom_model():
     config = {
@@ -150,14 +237,14 @@ def tst_custom_model():
         },
         "start_test": "2023-07-01",
         "model": "CustomModel",
-        "features": ["past_sales", "marketing", "price", "stock", "objectives"],
+        "features": ["last_month", "same_month_last_year", "last_year_average", "marketing", "price", "stock", "objectives"],
     }
 
     df_pred = model.make_predictions(config)
 
     df_true = pd.read_csv("data/raw/sales_to_predict.csv")
 
-    mse = mean_squared_error(df_true["sales"], df_pred["prediction"])
+    r2 = r2_score(df_true["sales"], df_pred["prediction"])
 
-    assert mse == pytest.approx(0.8446,rel=1e-3)
+    assert r2 == pytest.approx(0.8446,rel=1e-3)
 

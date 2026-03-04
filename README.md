@@ -172,13 +172,33 @@ Il s'agît de ventes mensuelles d'une industrie fictive.
 
 2) Coder un modèle auto-regressif.
 
-Re-activer le test en renommant `def tst_autoregressive_model` -> `def test_autoregressive_model`
+Re-activer le test en renommant `def tst_ridge_model` -> `def test_ridge_model`
+
+On veut entraîner un vrai modèle ridge, qui se sert de 2 features "last_month" (les ventes au mois précédent M-1) et "same_month_last_year" (les ventes à M-12)
+
+Coder le "build_feature" qui va générer ces différentes features autoregressive. <br/>
+Utiliser le modèle sklearn Ridge()
+
+3) Ajouter une feature au modèle auto-régressif: les ventes moyennes
+
+Re-activer le test en renommant `def tst_ridge_model_adding_yearly_mean_sales` -> `def test_ridge_model_adding_yearly_mean_sales`
+
+On pense que les ventes ne dépendent pas que des ventes au mois précédent ou au même mois l'année dernière, mais à la moyenne des ventes sur l'année.
+
+Calculer la moyenne des ventes par mois sur l'année précédente
+"last_year_average" = sum(sames(M-1:M-12)) / 12
+
+4) Ajouter une feature au modèle auto-régressif: le growth factor
+
+Re-activer le test en renommant `def tst_ridge_model__adding_growth_factor` -> `def test_ridge_model__adding_growth_factor`
+
 Les données ont été générées comme une combinaison des ventes le même mois l'année dernière, des ventes moyennes sur l'année dernière, et des ventes du même mois l'année dernière fois la croissance du quarter Q-5 au quarter Q-1
 
 $$sales(M) = a * sales(M-12) + b * sales(M-1:M-12) / 12 + c * sales(M-12) \frac{sales(M-1:M-3)}{sales(M-13:M-15)}$$
 
-Coder le "build_feature" qui va générer ces différentes features autoregressive. <br/>
-Utiliser le modèle sklearn Ridge()
+On va ajouter comme feature ce growth factor:
+$$growth(M) = \frac{sales(M-1:M-3)}{sales(M-13:M-15}$$
+
 
 3) Ajouter les données marketing.
 

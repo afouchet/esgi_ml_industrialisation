@@ -37,7 +37,7 @@ def test_model_same_month_last_year():
     pd.testing.assert_frame_equal(df_expected, df_pred)
     
 
-def test_autoregressive_model():
+def tst_autoregressive_model():
     config = {
         "data": {
             "sales": "data/raw/sales.csv",
@@ -55,7 +55,7 @@ def test_autoregressive_model():
     assert mse == pytest.approx(0.8019,rel=1e-3)
 
 
-def test_marketing_model():
+def tst_marketing_model():
     config = {
         "data": {
             "sales": "data/raw/sales.csv",
@@ -74,7 +74,7 @@ def test_marketing_model():
     assert mse == pytest.approx(0.8019,rel=1e-3)
 
 
-def test_price_model():
+def tst_price_model():
     config = {
         "data": {
             "sales": "data/raw/sales.csv",
@@ -95,7 +95,7 @@ def test_price_model():
     assert mse == pytest.approx(0.8446,rel=1e-3)
 
 
-def test_stock_model():
+def tst_stock_model():
     config = {
         "data": {
             "sales": "data/raw/sales.csv",
@@ -117,7 +117,7 @@ def test_stock_model():
     assert mse == pytest.approx(0.8446,rel=1e-3)
 
 
-def test_model_with_objectives():
+def tst_model_with_objectives():
     config = {
         "data": {
             "sales": "data/raw/sales.csv",
@@ -139,7 +139,7 @@ def test_model_with_objectives():
 
     assert mse == pytest.approx(0.8446,rel=1e-3)
 
-def test_custom_model():
+def tst_custom_model():
     config = {
         "data": {
             "sales": "data/raw/sales.csv",

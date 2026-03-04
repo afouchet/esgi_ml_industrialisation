@@ -171,6 +171,8 @@ Il s'agît de ventes mensuelles d'une industrie fictive.
 1) Coder un modèle "SameMonthLastYearSales", predisant, pour les ventes de item N pour un mois, les mêmes ventes qu'il a faites l'année dernière au même mois (pour août 2024 les mêmes ventes que l'item N a eu en août 2023)
 
 2) Coder un modèle auto-regressif.
+
+Re-activer le test en renommant `def tst_autoregressive_model` -> `def test_autoregressive_model`
 Les données ont été générées comme une combinaison des ventes le même mois l'année dernière, des ventes moyennes sur l'année dernière, et des ventes du même mois l'année dernière fois la croissance du quarter Q-5 au quarter Q-1
 
 $$sales(M) = a * sales(M-12) + b * sales(M-1:M-12) / 12 + c * sales(M-12) \frac{sales(M-1:M-3)}{sales(M-13:M-15)}$$
@@ -180,6 +182,8 @@ Utiliser le modèle sklearn Ridge()
 
 3) Ajouter les données marketing.
 
+Re-activer le test en renommant `def tst_marketing_model` -> `def test_marketing_model`
+
 Les mois où il y a eu des dépenses marketing, cela a impacté les ventes.
 
 Les données ont été générées ainsi
@@ -188,11 +192,15 @@ $$ sales(M) = ...past\, model... * (1 + marketing\_spend * d) $$
 
 4) Ajouter les données de prix
 
+Re-activer le test en renommant `def tst_price_model` -> `def test_price_model`
+
 Les clients, des grossistes, sont prévenus en avance d'un changement de prix. <br/>
 Si le prix va augmenter le mois suivant M+1, ils commandent plus que d'habitude au mois M, et moins au mois M+1. <br/<
 A l'inverse, si le prix va baisser, ils commandent moins au mois M et plus à M+1.
 
 5) Ajouter les données de stock
+
+Re-activer le test en renommant `def tst_stock_model` -> `def test_stock_model`
 
 Certains mois, l'industriel a eu des ruptures de stocks et donc a vendu moins que ce qu'il aurait pu. Le mois suivant, il a plus vendu car les clients ont racheté ce qu'ils devaient pour leur consommation. <br/>
 
@@ -207,6 +215,8 @@ $$ pred\_processed(item_i, month_M) = \min(stock(item_i, month_M), pred(item_i, 
 
 6) Ajouter les objectifs des commerciaux.
 
+Re-activer le test en renommant `def tst_stock_model` -> `def test_stock_model`
+
 Les commerciaux ont des objectifs de vente à l'année. L'année fiscal se terminant en juin, c'est ce mois, et le mois suivant, qui sont impactés. <br/>
 Si l'item a déjà fait son objectif, où est loin de le faire (resterait 20% des ventes à faire), il n'y a pas d'impact. <br/>
 Sinon, l'équipe commercial va faire tout son possible pour arriver à l'objectif, demandant à leurs clients de sur-acheter en juin. Du coup, il y a un sous-achat en juillet compensant la sur-vente de juin.
@@ -214,6 +224,8 @@ Sinon, l'équipe commercial va faire tout son possible pour arriver à l'objecti
 Intégrer les données des objectifs à votre pipeline de prédiction.
 
 7) Faire un modèle custom
+
+Re-activer le test en renommant `def tst_custom_model` -> `def test_custom_model`
 
 La génération des données a été faite ainsi. J'ai généré des données autoregressées ainsi:
 

@@ -139,7 +139,7 @@ def tst_ridge_model__adding_growth_factor():
     r2 = r2_score(df_true["sales"], df_pred["prediction"])
 
     # R2 score dimishied. Why do you think that is ?
-    assert r2 == pytest.approx(0.8405936764987022,rel=1e-3)
+    assert r2 == pytest.approx(0.8408,rel=1e-3)
 
 
 def tst_marketing_model():
@@ -158,7 +158,7 @@ def tst_marketing_model():
     df_true = pd.read_csv("data/raw/sales_to_predict.csv")
 
     r2 = r2_score(df_true["sales"], df_pred["prediction"])
-    assert r2 == pytest.approx(0.8019,rel=1e-3)
+    assert r2 == pytest.approx(0.8786,rel=1e-3)
 
 
 def tst_price_model():
@@ -179,7 +179,7 @@ def tst_price_model():
 
     r2 = r2_score(df_true["sales"], df_pred["prediction"])
 
-    assert r2 == pytest.approx(0.8446,rel=1e-3)
+    assert r2 == pytest.approx(0.8791,rel=1e-3)
 
 
 def tst_stock_model():

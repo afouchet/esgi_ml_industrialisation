@@ -200,7 +200,7 @@ On va ajouter comme feature ce growth factor:
 $$growth(M) = \frac{sales(M-1:M-3)}{sales(M-13:M-15}$$
 
 
-3) Ajouter les données marketing.
+5) Ajouter les données marketing.
 
 Re-activer le test en renommant `def tst_marketing_model` -> `def test_marketing_model`
 
@@ -210,7 +210,7 @@ Les données ont été générées ainsi
 
 $$ sales(M) = ...past\, model... * (1 + marketing\_spend * d) $$
 
-4) Ajouter les données de prix
+6) Ajouter les données de prix
 
 Re-activer le test en renommant `def tst_price_model` -> `def test_price_model`
 
@@ -218,7 +218,7 @@ Les clients, des grossistes, sont prévenus en avance d'un changement de prix. <
 Si le prix va augmenter le mois suivant M+1, ils commandent plus que d'habitude au mois M, et moins au mois M+1. <br/<
 A l'inverse, si le prix va baisser, ils commandent moins au mois M et plus à M+1.
 
-5) Ajouter les données de stock
+7) Ajouter les données de stock
 
 Re-activer le test en renommant `def tst_stock_model` -> `def test_stock_model`
 
@@ -233,7 +233,7 @@ Donc, on peut améliorer nos prédictions de cette façon:
 
 $$ pred\_processed(item_i, month_M) = \min(stock(item_i, month_M), pred(item_i, month_M)) $$
 
-6) Ajouter les objectifs des commerciaux.
+8) Ajouter les objectifs des commerciaux.
 
 Re-activer le test en renommant `def tst_stock_model` -> `def test_stock_model`
 
@@ -243,7 +243,7 @@ Sinon, l'équipe commercial va faire tout son possible pour arriver à l'objecti
 
 Intégrer les données des objectifs à votre pipeline de prédiction.
 
-7) Faire un modèle custom
+9) Faire un modèle custom
 
 Re-activer le test en renommant `def tst_custom_model` -> `def test_custom_model`
 

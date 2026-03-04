@@ -235,7 +235,7 @@ $$ pred\_processed(item_i, month_M) = \min(stock(item_i, month_M), pred(item_i, 
 
 8) Ajouter les objectifs des commerciaux.
 
-Re-activer le test en renommant `def tst_stock_model` -> `def test_stock_model`
+Re-activer le test en renommant `def tst_model_with_objectives` -> `def test_model_with_objectives`
 
 Les commerciaux ont des objectifs de vente à l'année. L'année fiscal se terminant en juin, c'est ce mois, et le mois suivant, qui sont impactés. <br/>
 Si l'item a déjà fait son objectif, où est loin de le faire (resterait 20% des ventes à faire), il n'y a pas d'impact. <br/>

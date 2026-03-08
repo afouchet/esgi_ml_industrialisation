@@ -215,7 +215,7 @@ $$ sales(M) = ...past\, model... * (1 + marketing\_spend * d) $$
 Re-activer le test en renommant `def tst_price_model` -> `def test_price_model`
 
 Les clients, des grossistes, sont prévenus en avance d'un changement de prix. <br/>
-Si le prix va augmenter le mois suivant M+1, ils commandent plus que d'habitude au mois M, et moins au mois M+1. <br/<
+Si le prix va augmenter le mois suivant M+1, ils commandent plus que d'habitude au mois M, et moins au mois M+1. <br/>
 A l'inverse, si le prix va baisser, ils commandent moins au mois M et plus à M+1.
 
 7) Ajouter les données de stock

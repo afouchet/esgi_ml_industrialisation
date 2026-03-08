@@ -259,4 +259,4 @@ Le test "test_autoregressive_model" passe. <br/>
 
 ## A rendre
 
-Votre code src/.
+Votre code src/ et tests/ si vous avez ajouté des tests

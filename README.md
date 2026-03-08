@@ -233,6 +233,8 @@ Donc, on peut améliorer nos prédictions de cette façon:
 
 $$ pred\_processed(item_i, month_M) = \min(stock(item_i, month_M), pred(item_i, month_M)) $$
 
+Laquelle des 2 étapes "retirer données d'apprentissage biaisées par le stock" ou "corriger les prédictions avec les stocks disponibles" a le plus améliorée le R2 ?
+
 8) Ajouter les objectifs des commerciaux.
 
 Re-activer le test en renommant `def tst_model_with_objectives` -> `def test_model_with_objectives`

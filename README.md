@@ -243,22 +243,6 @@ Sinon, l'équipe commercial va faire tout son possible pour arriver à l'objecti
 
 Intégrer les données des objectifs à votre pipeline de prédiction.
 
-9) Faire un modèle custom
-
-Re-activer le test en renommant `def tst_custom_model` -> `def test_custom_model`
-
-La génération des données a été faite ainsi. J'ai généré des données autoregressées ainsi:
-
-$$sales\_v1(M) = a * sales(M-12) + b * sales(M-1:M-12) / 12 + c * sales(M-12) \frac{sales(M-1:M-3)}{sales(M-13:M-15)}$$
-
-Ca fait, j'ai rajouté les effets:
-
-$$ sales\_v2(M)  = sales\_v1(M) * (1 + d * marketing ) * (1 + e * price\_change) $$
-
-J'ai ensuite ajouté, au hasard sur certains mois, des contraintes "objectifs commerciaux", puis des contraintes de stock.
-
-Vous pouvez faire votre propre modèle qui reprend ces équations, avec les paramètres a, b, c....,e, et utilser scipy.optimize pour trouver les paramètres idéaux.
-
 ### Après 30 minutes
 
 Les tests "test_model_prev_month" & "test_model_same_month_last_year"

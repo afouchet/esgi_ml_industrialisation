@@ -5,10 +5,6 @@ import concurrent.futures as concurrent_futures
 import json
 import os
 
-# Create results directory
-if not os.path.exists('results'):
-    os.makedirs('results')
-
 BASE_URL = "http://localhost:8080"
 
 def make_request(text):
@@ -63,7 +59,7 @@ def test_normal_cases():
 
     assert status_codes == [200] * len(texts)
 
-def tst_case_1():
+def test_case_1():
     texts = [
         "The product-A123B456 has really good battery life.",
         "I bought the model X100_Z200 and it's fantastic.",
@@ -75,7 +71,7 @@ def tst_case_1():
     
     assert avg_time < 1.
 
-def tst_case_2():
+def test_case_2():
     texts = [
         "I don't not like this product.",
         "There's never not a reason to buy this.",
@@ -89,7 +85,7 @@ def tst_case_2():
     assert results[2]["response"]["score"] > .5
     assert results[3]["response"]["score"] < .5
 
-def tst_case_3():
+def test_case_3():
     texts = [
         "I love this café's products!",
         "This product is très magnifique.",
@@ -101,7 +97,7 @@ def tst_case_3():
 
     assert status_codes == [200] * len(texts)
 
-def tst_case_4():
+def test_case_4():
     texts = [
         "This is a mediocre product with a special offer.",
         "The quality is average but it's a limited time deal.",
@@ -115,7 +111,7 @@ def tst_case_4():
     assert results[2]["response"]["score"] < .5
     assert results[3]["response"]["score"] < .5
 
-def tst_case_5():
+def test_case_5():
     texts = [
         "See my experience here: http://example.com/image1.jpg",
         "I uploaded a photo: http://mysite.com/review/product.png",
@@ -125,14 +121,14 @@ def tst_case_5():
     results = run_test_case("Normal Cases", texts)
     status_codes = [r["status_code"] for r in results]
 
-def tst_case_6():
+def test_case_6():
     texts = ["Short review number " + str(i) for i in range(20)]
     results = run_test_case("Normal Cases", texts)
     status_codes = [r["status_code"] for r in results]
 
     assert status_codes == [200] * len(texts)
 
-def tst_case_7():
+def test_case_7():
     texts = [
         "Le meilleur objet que j'ai jamais acheté.",
         "Depuis que j'ai le modèle AX412, je suis heureux",
@@ -146,7 +142,7 @@ def tst_case_7():
     assert results[2]["response"]["score"] < .5
     assert results[3]["response"]["score"] < .5
 
-def tst_check_health():
+def test_check_health():
     """Check the health endpoint"""
     response = requests.get(f"{BASE_URL}/health")
     res = response.json()

@@ -9,7 +9,7 @@ import os
 if not os.path.exists('results'):
     os.makedirs('results')
 
-BASE_URL = "http://localhost:5000"
+BASE_URL = "http://localhost:8080"
 
 def make_request(text):
     start_time = time.time()

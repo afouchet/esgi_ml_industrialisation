@@ -34,7 +34,7 @@ def make_request(text):
 def run_test_case(test_name, texts, concurrent=False):
     results = []
     if concurrent:
-        with concurrent_futures.ThreadPoolExecutor(max_workers=10) as executor:
+        with concurrent_futures.ThreadPoolExecutor(max_workers=20) as executor:
             futures = [executor.submit(make_request, text) for text in texts]
             for future in concurrent_futures.as_completed(futures):
                 results.append(future.result())
@@ -128,8 +128,8 @@ def test_case_5():
 
 
 def test_case_6():
-    texts = ["Short review number " + str(i) for i in range(20)]
-    results = run_test_case("Normal Cases", texts)
+    texts = ["Short review number " + str(i) for i in range(200)]
+    results = run_test_case("Normal Cases", texts, concurrent=True)
     status_codes = [r["status_code"] for r in results]
 
     assert status_codes == [200] * len(texts)

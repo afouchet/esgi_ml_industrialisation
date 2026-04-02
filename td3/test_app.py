@@ -121,6 +121,12 @@ def test_case_5():
     results = run_test_case("Normal Cases", texts)
     status_codes = [r["status_code"] for r in results]
 
+    usage = requests.get(f"{BASE_URL}/health").json()
+
+    assert usage["status"] == "ok"
+    assert usage["memory_usage"] < 1_000
+
+
 def test_case_6():
     texts = ["Short review number " + str(i) for i in range(20)]
     results = run_test_case("Normal Cases", texts)

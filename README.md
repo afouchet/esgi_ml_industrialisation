@@ -403,7 +403,7 @@ En l'état, un utilisateur peut:
 
 Vous trouverez l'implémentation du chatbot dans td5/chatbot.py<br/>
 Vous trouverez sur [ce lien](https://drive.google.com/file/d/1sPh1r6Tnoqg4K5hrMsxOqpyJkKtB-sjv/view?usp=sharing) un zip avec les CSV pour charger la base de données, à dézipper dans data/raw/td5.<br/>
-Allez sur [Groq](https://groq.com/) pour obtenir une clé API permettant de faire tourner le LLM "gemma2-9b-it" "gratuitement" (dans la limite du nombre de requête)
+Allez sur [Groq](https://groq.com/) pour obtenir une clé API permettant de faire tourner le LLM "openai/gpt-oss-20b" "gratuitement" (dans la limite du nombre de requête)
 Créer un fichier "conf.yml" avec "groq_key: YOUR_API_KEY"<br/>
 
 Normalement, si vous lancez
@@ -428,6 +428,9 @@ Modifier ChatBot.run_sql_query pour que le test "test_run_sql_query__to_validate
 
 On veut pouvoir annuler les actions prises.
 Changer "run_sql_query" pour que les tests "test_run_sql_query__created_undo_actions__update" et "test_run_sql_query__created_undo_actions__insert" passent
+
+Note: pour l'instant, on ne "undo" que les opérations `INSERT` et `DELETE`.<br/> 
+"Undo" un `UPDATE` est plus compliqué, on va l'ignorer pour ce TD
 
 #### Test 4: Create undo actions, correct testing
 
